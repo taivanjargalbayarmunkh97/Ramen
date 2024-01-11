@@ -6,7 +6,7 @@ In this comprehensive guide, you'll learn how to implement JWT (JSON Web Token) 
 
 ## Topics Covered
 
-- Run the Golang & Fiber JWT Auth Project
+- Run the Golang & Fiber JWT Auth Projec
 - Setup the Golang Project
 - Setup PostgreSQL and pgAdmin with Docker
 - Create the GORM Model
