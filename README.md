@@ -8,7 +8,7 @@ endpoints dedicated to secure user authentication, and persist data in a Postgre
 
 ## Topics Covered
 
-- Run the Golang & Fiber JWT Auth Projec
+- Run the Golang & Fiber JWT Auth Project
 - Setup the Golang Project
 - Setup PostgreSQL and pgAdmin with Docker
 - Create the GORM Model
