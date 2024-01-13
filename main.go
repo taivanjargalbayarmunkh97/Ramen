@@ -11,6 +11,7 @@ import (
 	"github.com/wpcodevo/golang-fiber-jwt/initializers"
 	"github.com/wpcodevo/golang-fiber-jwt/middleware"
 	"log"
+	"os"
 )
 
 func init() {
@@ -69,7 +70,11 @@ func main() {
 		})
 	})
 
-	port := "54018"
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
 	log.Fatal(app.Listen(":" + port))
 
 }
