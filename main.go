@@ -3,15 +3,15 @@ package main
 import (
 	"fmt"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/wpcodevo/golang-fiber-jwt/controllers/agency"
 	"github.com/wpcodevo/golang-fiber-jwt/controllers/auth"
 	"github.com/wpcodevo/golang-fiber-jwt/controllers/user"
-	"log"
-
-	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/wpcodevo/golang-fiber-jwt/initializers"
 	"github.com/wpcodevo/golang-fiber-jwt/middleware"
+	"log"
+	"os"
 )
 
 func init() {
@@ -25,7 +25,6 @@ func init() {
 func main() {
 	app := fiber.New()
 	micro := fiber.New()
-
 	app.Mount("/api", micro)
 	app.Use(logger.New())
 	app.Use(cors.New(cors.Config{
@@ -71,5 +70,7 @@ func main() {
 		})
 	})
 
-	log.Fatal(app.Listen(":3001"))
+	port := os.Getenv("PORT")
+	log.Fatal(app.Listen(":" + port))
+
 }

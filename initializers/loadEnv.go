@@ -18,6 +18,7 @@ type Config struct {
 	JwtMaxAge    int           `mapstructure:"JWT_MAXAGE"`
 
 	ClientOrigin string `mapstructure:"CLIENT_ORIGIN"`
+	HOST         string `mapstructure:"HOST"`
 }
 
 func LoadConfig(path string) (config Config, err error) {
