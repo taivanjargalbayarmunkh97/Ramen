@@ -55,6 +55,16 @@ func SignUpUser(c *fiber.Ctx) error {
 		"data": fiber.Map{"user": user.FilterUserRecord(&newUser)}})
 }
 
+// SignInUser godoc
+// @Summary Login
+// @Description Login
+// @Tags auth
+// @Accept  json
+// @Produce  json
+//	@Param	auth body user.SignInInput true "Auth"
+// @Success 200 {object} string "ok"
+// @Router /auth/login [post]
+
 func SignInUser(c *fiber.Ctx) error {
 	var payload *user.SignInInput
 
