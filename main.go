@@ -9,6 +9,7 @@ import (
 	"github.com/wpcodevo/golang-fiber-jwt/controllers/agency"
 	"github.com/wpcodevo/golang-fiber-jwt/controllers/auth"
 	"github.com/wpcodevo/golang-fiber-jwt/controllers/user"
+	_ "github.com/wpcodevo/golang-fiber-jwt/docs"
 	"github.com/wpcodevo/golang-fiber-jwt/initializers"
 	"github.com/wpcodevo/golang-fiber-jwt/middleware"
 	"log"
@@ -25,12 +26,7 @@ func init() {
 
 // @title Ramen API
 // @version 1.0
-// @description This is a sample swagger for Fiber
-// @termsOfService http://swagger.io/terms/
-// @contact.name API Support
-// @contact.email fiber@swagger.io
-// @license.name Apache 2.0
-// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+// @description This is a sample API with Fiber and Swagger
 // @host https://tranquil-river-84673-f93f313aee4e.herokuapp.com
 // @BasePath /api
 func main() {
@@ -44,6 +40,21 @@ func main() {
 		AllowHeaders:     "Origin, Content-Type, Accept",
 		AllowMethods:     "GET, POST",
 		AllowCredentials: true,
+	}))
+
+	app.Get("/swagger/*", fiberSwagger.HandlerDefault)
+	app.Get("/swagger/*", fiberSwagger.New(fiberSwagger.Config{ // custom
+		URL:         "http://example.com/doc.json",
+		DeepLinking: false,
+		// Expand ("list") or Collapse ("none") tag groups by default
+		DocExpansion: "none",
+		// Prefill OAuth ClientId on Authorize popup
+		OAuth: &fiberSwagger.OAuthConfig{
+			AppName:  "OAuth Provider",
+			ClientId: "21bb4edc-05a7-4afc-86f1-2e151e4ba6e2",
+		},
+		// Ability to change OAuth2 redirect uri location
+		OAuth2RedirectUrl: "http://localhost:8080/swagger/oauth2-redirect.html",
 	}))
 
 	// Нэвтрэх, бүртгүүлэх, гарах
@@ -81,21 +92,6 @@ func main() {
 			"message": fmt.Sprintf("Path: %v does not exists on this server", path),
 		})
 	})
-
-	app.Get("/swagger/*", fiberSwagger.HandlerDefault)
-	app.Get("/swagger/*", fiberSwagger.New(fiberSwagger.Config{ // custom
-		URL:         "http://example.com/doc.json",
-		DeepLinking: false,
-		// Expand ("list") or Collapse ("none") tag groups by default
-		DocExpansion: "none",
-		// Prefill OAuth ClientId on Authorize popup
-		OAuth: &fiberSwagger.OAuthConfig{
-			AppName:  "OAuth Provider",
-			ClientId: "21bb4edc-05a7-4afc-86f1-2e151e4ba6e2",
-		},
-		// Ability to change OAuth2 redirect uri location
-		OAuth2RedirectUrl: "http://localhost:8080/swagger/oauth2-redirect.html",
-	}))
 
 	port := os.Getenv("PORT")
 	if port == "" {

@@ -12,6 +12,16 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// SignUpUser godoc
+// @Summary Create a new user
+// @Description Create a new user
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param user body user.SignUpInput true "User"
+// @Success 201 {object} string
+// @Failure 400 {object} string
+// @Router /auth/register [post]
 func SignUpUser(c *fiber.Ctx) error {
 	var payload *user.SignUpInput
 
@@ -56,15 +66,15 @@ func SignUpUser(c *fiber.Ctx) error {
 }
 
 // SignInUser godoc
-// @Summary Login
-// @Description Login
-// @Tags auth
-// @Accept  json
-// @Produce  json
-//	@Param	auth body user.SignInInput true "Auth"
-// @Success 200 {object} string "ok"
+// @Summary Sign in user
+// @Description Sign in user
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param user body user.SignInInput true "User"
+// @Success 200 {object} string
+// @Failure 400 {object} string
 // @Router /auth/login [post]
-
 func SignInUser(c *fiber.Ctx) error {
 	var payload *user.SignInInput
 

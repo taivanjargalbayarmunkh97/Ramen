@@ -1,0 +1,385 @@
+basePath: /api
+definitions:
+  Agency.CreateAgency:
+    properties:
+      address:
+        type: string
+      city:
+        type: string
+      description:
+        type: string
+      email:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      website:
+        type: string
+    required:
+    - address
+    - city
+    - description
+    - email
+    - name
+    - phone
+    - website
+    type: object
+  Agency.UpdateAgency:
+    properties:
+      address:
+        type: string
+      city:
+        type: string
+      description:
+        type: string
+      email:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      website:
+        type: string
+    type: object
+  user.ErrorResponse:
+    properties:
+      field:
+        type: string
+      tag:
+        type: string
+      value:
+        type: string
+    type: object
+  user.SignInInput:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  user.SignUpInput:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        minLength: 8
+        type: string
+      passwordConfirm:
+        minLength: 8
+        type: string
+      photo:
+        type: string
+    required:
+    - email
+    - name
+    - password
+    - passwordConfirm
+    type: object
+  user.UserResponse:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      photo:
+        type: string
+      provider:
+        type: string
+      role:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  utils.DefaultParam:
+    properties:
+      key:
+        type: string
+      value: {}
+    type: object
+  utils.FilterObj:
+    properties:
+      field_name:
+        type: string
+      field_type:
+        type: string
+      operation:
+        type: string
+      value:
+        type: string
+      values:
+        items: {}
+        type: array
+    type: object
+  utils.Pagination:
+    properties:
+      current_page_no:
+        type: integer
+      per_page:
+        type: integer
+      sort:
+        type: string
+      total_elements:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  utils.RequestObj:
+    properties:
+      default_param:
+        items:
+          $ref: '#/definitions/utils.DefaultParam'
+        type: array
+      filter:
+        items:
+          $ref: '#/definitions/utils.FilterObj'
+        type: array
+      page_no:
+        type: integer
+      per_page:
+        type: integer
+      sort:
+        type: string
+    type: object
+  utils.ResponseObj:
+    properties:
+      data: {}
+      error: {}
+      pagination:
+        $ref: '#/definitions/utils.Pagination'
+      response_code:
+        type: integer
+      response_msg:
+        type: string
+    type: object
+host: https://tranquil-river-84673-f93f313aee4e.herokuapp.com
+info:
+  contact: {}
+  description: This is a sample API with Fiber and Swagger
+  title: Ramen API
+  version: "1.0"
+paths:
+  /agent/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete user
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete user
+      tags:
+      - Agency
+    get:
+      consumes:
+      - application/json
+      description: Get agent
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+      security:
+      - ApiKeyAuth: []
+      summary: Get agent
+      tags:
+      - Agency
+    put:
+      consumes:
+      - application/json
+      description: Update agent
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Agency
+        in: body
+        name: agency
+        required: true
+        schema:
+          $ref: '#/definitions/Agency.UpdateAgency'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+      security:
+      - ApiKeyAuth: []
+      summary: Update agent
+      tags:
+      - Agency
+  /agent/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new agency
+      parameters:
+      - description: Agency
+        in: body
+        name: agency
+        required: true
+        schema:
+          $ref: '#/definitions/Agency.CreateAgency'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a new agency
+      tags:
+      - Agency
+  /agent/list:
+    post:
+      consumes:
+      - application/json
+      description: Get agent list
+      parameters:
+      - description: Agency
+        in: body
+        name: agency
+        required: true
+        schema:
+          $ref: '#/definitions/utils.RequestObj'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+      security:
+      - ApiKeyAuth: []
+      summary: Get agent list
+      tags:
+      - Agency
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Sign in user
+      parameters:
+      - description: User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.SignInInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      summary: Sign in user
+      tags:
+      - Auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user
+      parameters:
+      - description: User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.SignUpInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      summary: Create a new user
+      tags:
+      - Auth
+  /users/me:
+    get:
+      consumes:
+      - application/json
+      description: Get user info
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/user.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get user info
+      tags:
+      - User
+swagger: "2.0"

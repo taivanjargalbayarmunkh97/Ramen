@@ -6,6 +6,16 @@ import (
 	"github.com/wpcodevo/golang-fiber-jwt/utils"
 )
 
+// GetMe godoc
+// @Summary Get user info
+// @Description Get user info
+// @Tags User
+// @Accept json
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {object} UserResponse
+// @Failure 400 {object} ErrorResponse
+// @Router /users/me [get]
 func GetMe(c *fiber.Ctx) error {
 	User := c.Locals("user").(user.UserResponse)
 

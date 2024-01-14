@@ -8,6 +8,17 @@ import (
 	"github.com/wpcodevo/golang-fiber-jwt/utils"
 )
 
+// CreateAgency godoc
+// @Summary Create a new agency
+// @Description Create a new agency
+// @Tags Agency
+// @Accept json
+// @Produce json
+// @Param agency body Agency.CreateAgency true "Agency"
+// @Security ApiKeyAuth
+// @Success 200 {object} utils.ResponseObj
+// @Failure 400 {object} utils.ResponseObj
+// @Router /agent/create [post]
 func CreateAgency(c *fiber.Ctx) error {
 	var payload *Agency.CreateAgency
 	var agency Agency.Agency
@@ -41,6 +52,17 @@ func CreateAgency(c *fiber.Ctx) error {
 
 }
 
+// GetAgentList godoc
+// @Summary Get agent list
+// @Description Get agent list
+// @Tags Agency
+// @Accept json
+// @Produce json
+// @Param agency body utils.RequestObj true "Agency"
+// @Security ApiKeyAuth
+// @Success 200 {object} utils.ResponseObj
+// @Failure 400 {object} utils.ResponseObj
+// @Router /agent/list [post]
 func GetAgentList(c *fiber.Ctx) error {
 	var agents []Agency.Agency
 	var request utils.RequestObj
@@ -65,6 +87,17 @@ func GetAgentList(c *fiber.Ctx) error {
 
 }
 
+// GetAgent godoc
+// @Summary Get agent
+// @Description Get agent
+// @Tags Agency
+// @Accept json
+// @Produce json
+// @Param id path string true "ID"
+// @Security ApiKeyAuth
+// @Success 200 {object} utils.ResponseObj
+// @Failure 400 {object} utils.ResponseObj
+// @Router /agent/{id} [get]
 func GetAgent(c *fiber.Ctx) error {
 	id := c.Params("id")
 	var agent Agency.Agency
@@ -78,6 +111,18 @@ func GetAgent(c *fiber.Ctx) error {
 
 }
 
+// UpdateAgent godoc
+// @Summary Update agent
+// @Description Update agent
+// @Tags Agency
+// @Accept json
+// @Produce json
+// @Param id path string true "ID"
+// @Param agency body Agency.UpdateAgency true "Agency"
+// @Security ApiKeyAuth
+// @Success 200 {object} utils.ResponseObj
+// @Failure 400 {object} utils.ResponseObj
+// @Router /agent/{id} [put]
 func UpdateAgent(c *fiber.Ctx) error {
 	id := c.Params("id")
 	var payload *Agency.UpdateAgency
@@ -105,6 +150,17 @@ func UpdateAgent(c *fiber.Ctx) error {
 
 }
 
+// DeleteUser godoc
+// @Summary Delete user
+// @Description Delete user
+// @Tags Agency
+// @Accept json
+// @Produce json
+// @Param id path string true "ID"
+// @Security ApiKeyAuth
+// @Success 200 {object} utils.ResponseObj
+// @Failure 400 {object} utils.ResponseObj
+// @Router /agent/{id} [delete]
 func DeleteUser(c *fiber.Ctx) error {
 	id := c.Params("id")
 	var agent Agency.Agency
