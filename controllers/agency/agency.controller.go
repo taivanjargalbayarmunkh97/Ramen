@@ -1,11 +1,11 @@
 package agency
 
 import (
+	"example.com/ramen/initializers"
+	"example.com/ramen/models/Agency"
+	"example.com/ramen/models/user"
+	"example.com/ramen/utils"
 	"github.com/gofiber/fiber/v2"
-	"github.com/wpcodevo/golang-fiber-jwt/initializers"
-	"github.com/wpcodevo/golang-fiber-jwt/models/Agency"
-	"github.com/wpcodevo/golang-fiber-jwt/models/user"
-	"github.com/wpcodevo/golang-fiber-jwt/utils"
 )
 
 // CreateAgency godoc

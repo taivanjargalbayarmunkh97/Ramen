@@ -1,9 +1,10 @@
 package initializers
 
 import (
+	"example.com/ramen/models/Agency"
+	"example.com/ramen/models/role"
+	"example.com/ramen/models/user"
 	"fmt"
-	"github.com/wpcodevo/golang-fiber-jwt/models/Agency"
-	"github.com/wpcodevo/golang-fiber-jwt/models/user"
 	"log"
 	"os"
 
@@ -27,7 +28,7 @@ func ConnectDB(config *Config) {
 	//DB.Logger = logger.Default.LogMode(logger.Info)
 
 	log.Println("Running Migrations")
-	err = DB.AutoMigrate(&user.User{}, &Agency.Agency{})
+	err = DB.AutoMigrate(&user.User{}, &Agency.Agency{}, &role.Role{})
 	if err != nil {
 		log.Fatal("Migration Failed:  \n", err.Error())
 		os.Exit(1)

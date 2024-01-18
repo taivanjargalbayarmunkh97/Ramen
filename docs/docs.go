@@ -600,7 +600,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "https://tranquil-river-84673-f93f313aee4e.herokuapp.com",
+	Host:             "http://103.168.56.249:8080",
 	BasePath:         "/api",
 	Schemes:          []string{},
 	Title:            "Ramen API",

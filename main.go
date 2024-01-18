@@ -1,33 +1,34 @@
 package main
 
 import (
+	"example.com/ramen/controllers/agency"
+	"example.com/ramen/controllers/auth"
+	"example.com/ramen/controllers/role"
+	"example.com/ramen/controllers/user"
+	_ "example.com/ramen/docs"
+	initializers2 "example.com/ramen/initializers"
+	"example.com/ramen/middleware"
 	"fmt"
 	fiberSwagger "github.com/arsmn/fiber-swagger/v2"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
-	"github.com/wpcodevo/golang-fiber-jwt/controllers/agency"
-	"github.com/wpcodevo/golang-fiber-jwt/controllers/auth"
-	"github.com/wpcodevo/golang-fiber-jwt/controllers/user"
-	_ "github.com/wpcodevo/golang-fiber-jwt/docs"
-	"github.com/wpcodevo/golang-fiber-jwt/initializers"
-	"github.com/wpcodevo/golang-fiber-jwt/middleware"
 	"log"
 	"os"
 )
 
 func init() {
-	config, err := initializers.LoadConfig(".")
+	config, err := initializers2.LoadConfig(".")
 	if err != nil {
 		log.Fatalln("Failed to load environment variables! \n", err.Error())
 	}
-	initializers.ConnectDB(&config)
+	initializers2.ConnectDB(&config)
 }
 
 // @title Ramen API
 // @version 1.0
 // @description This is a sample API with Fiber and Swagger
-// @host https://tranquil-river-84673-f93f313aee4e.herokuapp.com
+// @host http://103.168.56.249:8080
 // @BasePath /api
 func main() {
 	app := fiber.New()
@@ -67,6 +68,14 @@ func main() {
 	// Үндсэн хэрэглэгчийн мэдээлэл
 	micro.Route("/users", func(router fiber.Router) {
 		micro.Get("/me", middleware.DeserializeUser, user.GetMe)
+	})
+
+	// Хэрэглэгчийн эрх
+	micro.Route("/role", func(router fiber.Router) {
+		//router.Post("/list", middleware.DeserializeUser, role.GetRoleList)
+		router.Post("/create", middleware.DeserializeUser, role.CreateRole)
+		//router.Put("/:id", middleware.DeserializeUser, role.UpdateRole)
+		//router.Delete("/:id", middleware.DeserializeUser, role.DeleteRole)
 	})
 
 	// Агент

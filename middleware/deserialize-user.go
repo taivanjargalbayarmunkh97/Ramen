@@ -1,14 +1,14 @@
 package middleware
 
 import (
+	"example.com/ramen/initializers"
+	user2 "example.com/ramen/models/user"
+	"example.com/ramen/utils"
 	"fmt"
-	"github.com/wpcodevo/golang-fiber-jwt/models/user"
-	"github.com/wpcodevo/golang-fiber-jwt/utils"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt"
-	"github.com/wpcodevo/golang-fiber-jwt/initializers"
 )
 
 func DeserializeUser(c *fiber.Ctx) error {
@@ -45,7 +45,7 @@ func DeserializeUser(c *fiber.Ctx) error {
 
 	}
 
-	var user user.User
+	var user user2.User
 	initializers.DB.First(&user, "id = ?", fmt.Sprint(claims["sub"]))
 
 	if user.ID.String() != claims["sub"] {

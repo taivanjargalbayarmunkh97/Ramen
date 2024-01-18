@@ -6,7 +6,7 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "https://tranquil-river-84673-f93f313aee4e.herokuapp.com",
+    "host": "http://103.168.56.249:8080",
     "basePath": "/api",
     "paths": {
         "/agent/create": {

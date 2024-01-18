@@ -1,14 +1,14 @@
 package auth
 
 import (
+	"example.com/ramen/initializers"
+	"example.com/ramen/models/user"
 	"fmt"
-	"github.com/wpcodevo/golang-fiber-jwt/models/user"
 	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt"
-	"github.com/wpcodevo/golang-fiber-jwt/initializers"
 	"golang.org/x/crypto/bcrypt"
 )
 

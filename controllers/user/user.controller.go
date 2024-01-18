@@ -1,9 +1,9 @@
 package user
 
 import (
+	"example.com/ramen/models/user"
+	"example.com/ramen/utils"
 	"github.com/gofiber/fiber/v2"
-	"github.com/wpcodevo/golang-fiber-jwt/models/user"
-	"github.com/wpcodevo/golang-fiber-jwt/utils"
 )
 
 // GetMe godoc
