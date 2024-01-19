@@ -60,7 +60,7 @@ func main() {
 
 	// Нэвтрэх, бүртгүүлэх, гарах
 	micro.Route("/auth", func(router fiber.Router) {
-		router.Post("/register", auth.SignUpUser)
+		router.Post("/register", auth.SignUpInfluencer)
 		router.Post("/login", auth.SignInUser)
 		router.Get("/logout", middleware.DeserializeUser, auth.LogoutUser)
 	})
@@ -72,10 +72,10 @@ func main() {
 
 	// Хэрэглэгчийн эрх
 	micro.Route("/role", func(router fiber.Router) {
-		//router.Post("/list", middleware.DeserializeUser, role.GetRoleList)
+		router.Post("/list", middleware.DeserializeUser, role.GetRoleList)
 		router.Post("/create", middleware.DeserializeUser, role.CreateRole)
-		//router.Put("/:id", middleware.DeserializeUser, role.UpdateRole)
-		//router.Delete("/:id", middleware.DeserializeUser, role.DeleteRole)
+		router.Put("/:id", middleware.DeserializeUser, role.UpdateRole)
+		router.Delete("/:id", middleware.DeserializeUser, role.DeleteRole)
 	})
 
 	// Агент

@@ -1,14 +1,13 @@
 package role
 
 import (
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"time"
 )
 
 type Role struct {
-	ID          *uuid.UUID     `json:"id" gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
-	Name        string         `json:"name" gorm:"default:nullcd"`
+	Id          uint64         `json:"id" sql:"AUTO_INCREMENT" gorm:"primary_key;uniqueIndex"`
+	Name        string         `json:"name" gorm:"default:null"`
 	Description string         `json:"description"`
 	Field1      string         `json:"field1"`
 	Field2      string         `json:"field2"`
@@ -21,9 +20,9 @@ type Role struct {
 type RoleCreateInput struct {
 	Name        string `json:"name" validate:"required"`
 	Description string `json:"description"`
-	Field1      string `json:"field1"`
-	Field2      string `json:"field2"`
-	Field3      string `json:"field3"`
+	Field1      string `json:"field1" default:"null"`
+	Field2      string `json:"field2" default:"null"`
+	Field3      string `json:"field3" default:"null"`
 }
 
 type RoleUpdateInput struct {

@@ -12,18 +12,18 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// SignUpUser godoc
-// @Summary Create a new user
-// @Description Create a new user
+// SignUpInfluencer godoc
+// @Summary Sign up influencer
+// @Description Sign up influencer
 // @Tags Auth
 // @Accept json
 // @Produce json
-// @Param user body user.SignUpInput true "User"
+// @Param user body  user.SignUpInfluencer true "User"
 // @Success 201 {object} string
 // @Failure 400 {object} string
-// @Router /auth/register [post]
-func SignUpUser(c *fiber.Ctx) error {
-	var payload *user.SignUpInput
+// @Router /auth/signup/influencer [post]
+func SignUpInfluencer(c *fiber.Ctx) error {
+	var payload *user.SignUpInfluencer
 
 	if err := c.BodyParser(&payload); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "message": err.Error()})
@@ -47,10 +47,25 @@ func SignUpUser(c *fiber.Ctx) error {
 	}
 
 	newUser := user.User{
-		Name:     payload.Name,
-		Email:    strings.ToLower(payload.Email),
-		Password: string(hashedPassword),
-		Photo:    &payload.Photo,
+		Name:              payload.Name,
+		Email:             strings.ToLower(payload.Email),
+		Password:          string(hashedPassword),
+		Photo:             &payload.Photo,
+		Role:              payload.RoleId,
+		InfluencerIgName:  payload.IgName,
+		Followers:         payload.Followers,
+		Location:          payload.Location,
+		EngagementRate:    payload.EngagementRate,
+		AverageLikes:      payload.AverageLikes,
+		Bio:               payload.Bio,
+		TotalPosts:        payload.TotalPosts,
+		AvgLikes:          payload.AvgLikes,
+		AvgComments:       payload.AvgComments,
+		AvgViews:          payload.AvgViews,
+		AvgReelPlays:      payload.AvgReelPlays,
+		GenderSplit:       payload.GenderSplit,
+		AudienceInterests: payload.AudienceInteres,
+		PopularPosts:      payload.PopularPosts,
 	}
 
 	result := initializers.DB.Create(&newUser)
@@ -106,7 +121,7 @@ func SignInUser(c *fiber.Ctx) error {
 	now := time.Now().UTC()
 	claims := tokenByte.Claims.(jwt.MapClaims)
 
-	claims["sub"] = user.ID
+	claims["sub"] = user.Id
 	claims["exp"] = now.Add(config.JwtExpiresIn).Unix()
 	claims["iat"] = now.Unix()
 	claims["nbf"] = now.Unix()

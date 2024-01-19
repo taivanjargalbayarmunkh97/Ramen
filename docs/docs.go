@@ -279,9 +279,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/auth/register": {
+        "/auth/signup/influencer": {
             "post": {
-                "description": "Create a new user",
+                "description": "Sign up influencer",
                 "consumes": [
                     "application/json"
                 ],
@@ -291,7 +291,7 @@ const docTemplate = `{
                 "tags": [
                     "Auth"
                 ],
-                "summary": "Create a new user",
+                "summary": "Sign up influencer",
                 "parameters": [
                     {
                         "description": "User",
@@ -299,7 +299,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/user.SignUpInput"
+                            "$ref": "#/definitions/user.SignUpInfluencer"
                         }
                     }
                 ],
@@ -314,6 +314,189 @@ const docTemplate = `{
                         "description": "Bad Request",
                         "schema": {
                             "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/role/create": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Create a new role",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Role"
+                ],
+                "summary": "Create a new role",
+                "parameters": [
+                    {
+                        "description": "Role",
+                        "name": "role",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/role.RoleCreateInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ResponseObj"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ResponseObj"
+                        }
+                    }
+                }
+            }
+        },
+        "/role/list": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get role list",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Role"
+                ],
+                "summary": "Get role list",
+                "parameters": [
+                    {
+                        "description": "Role",
+                        "name": "role",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestObj"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ResponseObj"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ResponseObj"
+                        }
+                    }
+                }
+            }
+        },
+        "/role/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Update role",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Role"
+                ],
+                "summary": "Update role",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Role ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Role",
+                        "name": "role",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/role.RoleUpdateInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ResponseObj"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ResponseObj"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Delete role",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Role"
+                ],
+                "summary": "Delete role",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Role ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ResponseObj"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ResponseObj"
                         }
                     }
                 }
@@ -416,6 +599,55 @@ const docTemplate = `{
                 }
             }
         },
+        "role.RoleCreateInput": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "field1": {
+                    "type": "string",
+                    "default": "null"
+                },
+                "field2": {
+                    "type": "string",
+                    "default": "null"
+                },
+                "field3": {
+                    "type": "string",
+                    "default": "null"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "role.RoleUpdateInput": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "field1": {
+                    "type": "string"
+                },
+                "field2": {
+                    "type": "string"
+                },
+                "field3": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "user.ErrorResponse": {
             "type": "object",
             "properties": {
@@ -445,31 +677,75 @@ const docTemplate = `{
                 }
             }
         },
-        "user.SignUpInput": {
+        "user.SignUpInfluencer": {
             "type": "object",
             "required": [
                 "email",
+                "ig_name",
                 "name",
                 "password",
                 "passwordConfirm"
             ],
             "properties": {
+                "audience_interests": {
+                    "type": "string"
+                },
+                "average_likes": {
+                    "type": "number"
+                },
+                "avg_comments": {
+                    "type": "number"
+                },
+                "avg_likes": {
+                    "type": "number"
+                },
+                "avg_reel_plays": {
+                    "type": "number"
+                },
+                "avg_views": {
+                    "type": "number"
+                },
+                "bio": {
+                    "type": "string"
+                },
                 "email": {
+                    "type": "string"
+                },
+                "engagement_rate": {
+                    "type": "number"
+                },
+                "followers": {
+                    "type": "number"
+                },
+                "gender_split": {
+                    "type": "string"
+                },
+                "ig_name": {
+                    "type": "string"
+                },
+                "location": {
                     "type": "string"
                 },
                 "name": {
                     "type": "string"
                 },
                 "password": {
-                    "type": "string",
-                    "minLength": 8
+                    "type": "string"
                 },
                 "passwordConfirm": {
-                    "type": "string",
-                    "minLength": 8
+                    "type": "string"
                 },
                 "photo": {
                     "type": "string"
+                },
+                "popular_posts": {
+                    "type": "string"
+                },
+                "role_id": {
+                    "type": "string"
+                },
+                "total_posts": {
+                    "type": "number"
                 }
             }
         },
@@ -483,7 +759,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "name": {
                     "type": "string"

@@ -42,6 +42,39 @@ definitions:
       website:
         type: string
     type: object
+  role.RoleCreateInput:
+    properties:
+      description:
+        type: string
+      field1:
+        default: "null"
+        type: string
+      field2:
+        default: "null"
+        type: string
+      field3:
+        default: "null"
+        type: string
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  role.RoleUpdateInput:
+    properties:
+      description:
+        type: string
+      field1:
+        type: string
+      field2:
+        type: string
+      field3:
+        type: string
+      name:
+        type: string
+    required:
+    - name
+    type: object
   user.ErrorResponse:
     properties:
       field:
@@ -61,22 +94,51 @@ definitions:
     - email
     - password
     type: object
-  user.SignUpInput:
+  user.SignUpInfluencer:
     properties:
+      audience_interests:
+        type: string
+      average_likes:
+        type: number
+      avg_comments:
+        type: number
+      avg_likes:
+        type: number
+      avg_reel_plays:
+        type: number
+      avg_views:
+        type: number
+      bio:
+        type: string
       email:
+        type: string
+      engagement_rate:
+        type: number
+      followers:
+        type: number
+      gender_split:
+        type: string
+      ig_name:
+        type: string
+      location:
         type: string
       name:
         type: string
       password:
-        minLength: 8
         type: string
       passwordConfirm:
-        minLength: 8
         type: string
       photo:
         type: string
+      popular_posts:
+        type: string
+      role_id:
+        type: string
+      total_posts:
+        type: number
     required:
     - email
+    - ig_name
     - name
     - password
     - passwordConfirm
@@ -88,7 +150,7 @@ definitions:
       email:
         type: string
       id:
-        type: string
+        type: integer
       name:
         type: string
       photo:
@@ -335,18 +397,18 @@ paths:
       summary: Sign in user
       tags:
       - Auth
-  /auth/register:
+  /auth/signup/influencer:
     post:
       consumes:
       - application/json
-      description: Create a new user
+      description: Sign up influencer
       parameters:
       - description: User
         in: body
         name: user
         required: true
         schema:
-          $ref: '#/definitions/user.SignUpInput'
+          $ref: '#/definitions/user.SignUpInfluencer'
       produces:
       - application/json
       responses:
@@ -358,9 +420,124 @@ paths:
           description: Bad Request
           schema:
             type: string
-      summary: Create a new user
+      summary: Sign up influencer
       tags:
       - Auth
+  /role/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete role
+      parameters:
+      - description: Role ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete role
+      tags:
+      - Role
+    put:
+      consumes:
+      - application/json
+      description: Update role
+      parameters:
+      - description: Role ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Role
+        in: body
+        name: role
+        required: true
+        schema:
+          $ref: '#/definitions/role.RoleUpdateInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+      security:
+      - ApiKeyAuth: []
+      summary: Update role
+      tags:
+      - Role
+  /role/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new role
+      parameters:
+      - description: Role
+        in: body
+        name: role
+        required: true
+        schema:
+          $ref: '#/definitions/role.RoleCreateInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a new role
+      tags:
+      - Role
+  /role/list:
+    post:
+      consumes:
+      - application/json
+      description: Get role list
+      parameters:
+      - description: Role
+        in: body
+        name: role
+        required: true
+        schema:
+          $ref: '#/definitions/utils.RequestObj'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+      security:
+      - ApiKeyAuth: []
+      summary: Get role list
+      tags:
+      - Role
   /users/me:
     get:
       consumes:
