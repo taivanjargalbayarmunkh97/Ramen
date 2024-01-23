@@ -3,6 +3,7 @@ package main
 import (
 	"example.com/ramen/controllers/agency"
 	"example.com/ramen/controllers/auth"
+	"example.com/ramen/controllers/file"
 	"example.com/ramen/controllers/role"
 	"example.com/ramen/controllers/user"
 	_ "example.com/ramen/docs"
@@ -37,7 +38,7 @@ func main() {
 	app.Mount("/api", micro)
 	app.Use(logger.New())
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "http://localhost:3000",
+		AllowOrigins:     "*",
 		AllowHeaders:     "Origin, Content-Type, Accept",
 		AllowMethods:     "GET, POST",
 		AllowCredentials: true,
@@ -60,14 +61,23 @@ func main() {
 
 	// Нэвтрэх, бүртгүүлэх, гарах
 	micro.Route("/auth", func(router fiber.Router) {
-		router.Post("/register", auth.SignUpInfluencer)
+		router.Post("/signup/admin", auth.SignUpAdmin)
+		router.Post("/signup/influencer", auth.SignUpInfluencer)
+		router.Post("/signup/company", auth.SignUpCompany)
 		router.Post("/login", auth.SignInUser)
 		router.Get("/logout", middleware.DeserializeUser, auth.LogoutUser)
 	})
 
 	// Үндсэн хэрэглэгчийн мэдээлэл
 	micro.Route("/users", func(router fiber.Router) {
-		micro.Get("/me", middleware.DeserializeUser, user.GetMe)
+		router.Get("/me", middleware.DeserializeUser, user.GetMe)
+		router.Post("/list", middleware.DeserializeUser, user.GetUserList)
+		router.Put("/:user_id", middleware.DeserializeUser, user.UpdateUser)
+	})
+
+	// File
+	micro.Route("/file", func(router fiber.Router) {
+		router.Get("/:name", middleware.DeserializeUser, file.GetFile)
 	})
 
 	// Хэрэглэгчийн эрх

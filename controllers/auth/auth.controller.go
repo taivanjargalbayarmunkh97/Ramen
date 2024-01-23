@@ -3,7 +3,9 @@ package auth
 import (
 	"example.com/ramen/initializers"
 	"example.com/ramen/models/user"
+	"example.com/ramen/utils"
 	"fmt"
+	"net/http"
 	"strings"
 	"time"
 
@@ -11,6 +13,58 @@ import (
 	"github.com/golang-jwt/jwt"
 	"golang.org/x/crypto/bcrypt"
 )
+
+// SignUpAdmin godoc
+// @Summary Create a new admin
+// @Description Create a new admin
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param user body user.SignUpInput true "User"
+// @Success 201 {object} string
+// @Failure 400 {object} string
+// @Router /auth/signup/admin [post]
+func SignUpAdmin(c *fiber.Ctx) error {
+	var payload *user.SignUpInput
+
+	if err := c.BodyParser(&payload); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "message": err.Error()})
+	}
+
+	errors := user.ValidateStruct(payload)
+	if errors != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "errors": errors})
+
+	}
+
+	if payload.Password != payload.PasswordConfirm {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "message": "Passwords do not match"})
+
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(payload.Password), bcrypt.DefaultCost)
+
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "message": err.Error()})
+	}
+
+	newUser := user.User{
+		Name:     payload.Name,
+		Email:    strings.ToLower(payload.Email),
+		Password: string(hashedPassword),
+	}
+
+	result := initializers.DB.Create(&newUser)
+
+	if result.Error != nil && strings.Contains(result.Error.Error(), "duplicate key value violates unique") {
+		return c.Status(fiber.StatusConflict).JSON(fiber.Map{"status": "fail", "message": "User with that email already exists"})
+	} else if result.Error != nil {
+		return c.Status(fiber.StatusBadGateway).JSON(fiber.Map{"status": "error", "message": "Something bad happened"})
+	}
+
+	return c.Status(fiber.StatusCreated).JSON(utils.ResponseObj{ResponseCode: fiber.StatusOK,
+		ResponseMsg: "Амжилттай бүртгэлээ", Data: newUser})
+}
 
 // SignUpInfluencer godoc
 // @Summary Sign up influencer
@@ -50,7 +104,6 @@ func SignUpInfluencer(c *fiber.Ctx) error {
 		Name:              payload.Name,
 		Email:             strings.ToLower(payload.Email),
 		Password:          string(hashedPassword),
-		Photo:             &payload.Photo,
 		Role:              payload.RoleId,
 		InfluencerIgName:  payload.IgName,
 		Followers:         payload.Followers,
@@ -66,6 +119,7 @@ func SignUpInfluencer(c *fiber.Ctx) error {
 		GenderSplit:       payload.GenderSplit,
 		AudienceInterests: payload.AudienceInteres,
 		PopularPosts:      payload.PopularPosts,
+		PhoneNumber:       payload.PhoneNumber,
 	}
 
 	result := initializers.DB.Create(&newUser)
@@ -76,8 +130,74 @@ func SignUpInfluencer(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadGateway).JSON(fiber.Map{"status": "error", "message": "Something bad happened"})
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"status": "success",
-		"data": fiber.Map{"user": user.FilterUserRecord(&newUser)}})
+	if payload.Photo != "" {
+		err := utils.FileUpload(payload.Photo, newUser.ID, "Influencer")
+		if err != nil {
+			return c.Status(http.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: http.StatusBadRequest,
+				ResponseMsg: err.Error()})
+		}
+	}
+
+	return c.Status(fiber.StatusCreated).JSON(utils.ResponseObj{ResponseCode: fiber.StatusOK,
+		ResponseMsg: "Амжилттай бүртгэлээ", Data: newUser})
+}
+
+// SignUpCompany godoc
+// @Summary Sign up company
+// @Description Sign up company
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param user body user.SignUpCompany true "User"
+// @Success 200 {object} string
+// @Failure 400 {object} string
+// @Router /auth/signup/company [post]
+func SignUpCompany(c *fiber.Ctx) error {
+	var payload *user.SignUpCompany
+
+	if err := c.BodyParser(&payload); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "message": err.Error()})
+	}
+
+	errors := user.ValidateStruct(payload)
+	if errors != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "errors": errors})
+
+	}
+
+	if payload.Password != payload.PasswordConfirm {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "message": "Passwords do not match"})
+
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(payload.Password), bcrypt.DefaultCost)
+
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "message": err.Error()})
+	}
+
+	newUser := user.User{
+		Name:               payload.Name,
+		Email:              strings.ToLower(payload.Email),
+		Password:           string(hashedPassword),
+		Role:               payload.RoleId,
+		CompanyAccount:     payload.CompanyAccount,
+		Location:           payload.Location,
+		PhoneNumber:        payload.PhoneNumber,
+		ManagerPhoneNumber: payload.ManagerPhoneNumber,
+	}
+
+	result := initializers.DB.Create(&newUser)
+
+	if result.Error != nil && strings.Contains(result.Error.Error(), "duplicate key value violates unique") {
+		return c.Status(fiber.StatusConflict).JSON(fiber.Map{"status": "fail", "message": "User with that email already exists"})
+	} else if result.Error != nil {
+		return c.Status(fiber.StatusBadGateway).JSON(fiber.Map{"status": "error", "message": "Something bad happened"})
+	}
+
+	return c.Status(fiber.StatusCreated).JSON(utils.ResponseObj{ResponseCode: fiber.StatusOK,
+		ResponseMsg: "Амжилттай бүртгэлээ", Data: newUser})
+
 }
 
 // SignInUser godoc
@@ -121,7 +241,7 @@ func SignInUser(c *fiber.Ctx) error {
 	now := time.Now().UTC()
 	claims := tokenByte.Claims.(jwt.MapClaims)
 
-	claims["sub"] = user.Id
+	claims["sub"] = user.ID
 	claims["exp"] = now.Add(config.JwtExpiresIn).Unix()
 	claims["iat"] = now.Unix()
 	claims["nbf"] = now.Unix()

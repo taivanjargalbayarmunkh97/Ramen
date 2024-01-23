@@ -46,13 +46,16 @@ func DeserializeUser(c *fiber.Ctx) error {
 	}
 
 	var user user2.User
-	initializers.DB.First(&user, "id = ?", fmt.Sprint(claims["sub"]))
+	result := initializers.DB.First(&user, "id = ?", fmt.Sprint(claims["sub"]))
+	if result.RowsAffected == 0 {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"status": "fail", "message": "user not found"})
+	}
 
-	if user.Id != claims["sub"] {
+	if user.ID.String() != claims["sub"] {
 		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{"status": "fail", "message": "the user belonging to this token no logger exists"})
 	}
 
-	c.Locals("user", user.FilterUserRecord(&user))
+	c.Locals("user", claims["sub"])
 
 	return c.Next()
 }

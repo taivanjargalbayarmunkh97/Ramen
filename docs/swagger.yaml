@@ -75,15 +75,6 @@ definitions:
     required:
     - name
     type: object
-  user.ErrorResponse:
-    properties:
-      field:
-        type: string
-      tag:
-        type: string
-      value:
-        type: string
-    type: object
   user.SignInInput:
     properties:
       email:
@@ -93,6 +84,35 @@ definitions:
     required:
     - email
     - password
+    type: object
+  user.SignUpCompany:
+    properties:
+      company_account:
+        type: string
+      email:
+        type: string
+      location:
+        type: string
+      manager_phone_number:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      passwordConfirm:
+        type: string
+      phone_number:
+        type: string
+      photo:
+        type: string
+      role_id:
+        type: string
+    required:
+    - email
+    - name
+    - password
+    - passwordConfirm
+    - phone_number
     type: object
   user.SignUpInfluencer:
     properties:
@@ -128,6 +148,8 @@ definitions:
         type: string
       passwordConfirm:
         type: string
+      phone_number:
+        type: string
       photo:
         type: string
       popular_posts:
@@ -143,24 +165,72 @@ definitions:
     - password
     - passwordConfirm
     type: object
-  user.UserResponse:
+  user.SignUpInput:
     properties:
-      created_at:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        minLength: 8
+        type: string
+      passwordConfirm:
+        minLength: 8
+        type: string
+      photo:
+        type: string
+    required:
+    - email
+    - name
+    - password
+    - passwordConfirm
+    type: object
+  user.UserUpdate:
+    properties:
+      audience_interests:
+        type: string
+      average_likes:
+        type: number
+      avg_comments:
+        type: number
+      avg_likes:
+        type: number
+      avg_reel_plays:
+        type: number
+      avg_views:
+        type: number
+      bio:
+        type: string
+      company_account:
         type: string
       email:
         type: string
-      id:
-        type: integer
+      engagement_rate:
+        type: number
+      followers:
+        type: number
+      gender_split:
+        type: string
+      influencer_ig_name:
+        type: string
+      location:
+        type: string
+      manager_phone_number:
+        type: string
       name:
         type: string
+      phone_number:
+        type: string
       photo:
+        type: string
+      popular_posts:
         type: string
       provider:
         type: string
       role:
         type: string
-      updated_at:
-        type: string
+      total_posts:
+        type: number
     type: object
   utils.DefaultParam:
     properties:
@@ -397,6 +467,58 @@ paths:
       summary: Sign in user
       tags:
       - Auth
+  /auth/signup/admin:
+    post:
+      consumes:
+      - application/json
+      description: Create a new admin
+      parameters:
+      - description: User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.SignUpInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      summary: Create a new admin
+      tags:
+      - Auth
+  /auth/signup/company:
+    post:
+      consumes:
+      - application/json
+      description: Sign up company
+      parameters:
+      - description: User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.SignUpCompany'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      summary: Sign up company
+      tags:
+      - Auth
   /auth/signup/influencer:
     post:
       consumes:
@@ -423,6 +545,31 @@ paths:
       summary: Sign up influencer
       tags:
       - Auth
+  /files/{name}:
+    get:
+      consumes:
+      - application/json
+      description: Get file by name
+      parameters:
+      - description: name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      summary: Get file by name
+      tags:
+      - File
   /role/{id}:
     delete:
       consumes:
@@ -538,6 +685,67 @@ paths:
       summary: Get role list
       tags:
       - Role
+  /users/{user_id}:
+    put:
+      consumes:
+      - application/json
+      description: Update user
+      parameters:
+      - description: ID
+        in: path
+        name: user_id
+        required: true
+        type: string
+      - description: UserUpdate
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.UserUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Update user
+      tags:
+      - User
+  /users/list:
+    post:
+      consumes:
+      - application/json
+      description: Get user list
+      parameters:
+      - description: RequestObj
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/utils.RequestObj'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+      security:
+      - ApiKeyAuth: []
+      summary: Get user list
+      tags:
+      - User
   /users/me:
     get:
       consumes:
@@ -549,11 +757,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/user.UserResponse'
+            type: string
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/user.ErrorResponse'
+            type: string
       security:
       - ApiKeyAuth: []
       summary: Get user info
