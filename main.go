@@ -32,20 +32,24 @@ func init() {
 // @host http://103.168.56.249:8080
 // @BasePath /api
 func main() {
-	app := fiber.New()
 	micro := fiber.New()
 
-	app.Mount("/api", micro)
-	app.Use(logger.New())
-	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "*",
-		AllowHeaders:     "Origin, Content-Type, Accept",
-		AllowMethods:     "GET, POST",
-		AllowCredentials: true,
-	}))
+	//corsConfig := cors.Config{
+	//	AllowOrigins:     "*",
+	//	AllowMethods:     "GET,POST,PUT,DELETE",
+	//	AllowHeaders:     "Origin, Content-Type, Accept",
+	//	ExposeHeaders:    "Authorization",
+	//	AllowCredentials: true,
+	//	MaxAge:           3600, // seconds
+	//}
 
-	app.Get("/swagger/*", fiberSwagger.HandlerDefault)
-	app.Get("/swagger/*", fiberSwagger.New(fiberSwagger.Config{ // custom
+	micro.Use(cors.New())
+
+	micro.Mount("/api", micro)
+	micro.Use(logger.New())
+
+	micro.Get("/swagger/*", fiberSwagger.HandlerDefault)
+	micro.Get("/swagger/*", fiberSwagger.New(fiberSwagger.Config{ // custom
 		URL:         "http://example.com/doc.json",
 		DeepLinking: false,
 		// Expand ("list") or Collapse ("none") tag groups by default
@@ -117,6 +121,6 @@ func main() {
 		port = "8080"
 	}
 
-	log.Fatal(app.Listen(":" + port))
+	log.Fatal(micro.Listen(":" + port))
 
 }
