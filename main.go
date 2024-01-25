@@ -37,7 +37,7 @@ func main() {
 
 	app.Mount("/api", micro)
 	app.Use(logger.New())
-	micro.Use(cors.New(cors.Config{
+	app.Use(cors.New(cors.Config{
 		AllowOrigins:     "*",
 		AllowHeaders:     "Origin, Content-Type, Accept",
 		AllowMethods:     "GET, POST",
