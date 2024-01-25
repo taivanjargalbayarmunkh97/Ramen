@@ -2,6 +2,7 @@ package user
 
 import (
 	"example.com/ramen/models/file"
+	_map "example.com/ramen/models/map"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"time"
@@ -18,6 +19,7 @@ type User struct {
 	Role               *string        `json:"role" default:"null"`
 	Provider           *string        `json:"provider" default:"null"`
 	Photo              *[]file.File   `json:"photo" default:"null" gorm:"foreignKey:ParentId"`
+	PRole              *_map.Map      `json:"prole" default:"null" gorm:"foreignKey:EntityId"`
 	Followers          *float64       `json:"followers" default:"null"`
 	Location           *string        `json:"location" default:"null"`
 	EngagementRate     *float64       `json:"engagement_rate" default:"null"`
@@ -40,12 +42,14 @@ type User struct {
 }
 
 type UserSimple struct {
+	ID                 *uuid.UUID   `json:"id"`
 	Name               string       `json:"name" default:"null"`
 	Email              string       `json:"email" default:"null" gorm:"uniqueIndex"`
 	PhoneNumber        string       `json:"phone_number" default:"null"`
 	Role               *string      `json:"role" default:"null"`
 	Provider           *string      `json:"provider" default:"null"`
-	Photo              *[]file.File `json:"photo" default:"null" gorm:"foreignKey:ParentId"`
+	Photo              *[]file.File `json:"photo" default:"null" gorm:"foreignKey:ParentId;references:ID"`
+	PRole              *_map.Map    `json:"prole" default:"null" gorm:"foreignKey:EntityId;references:ID"`
 	Followers          *float64     `json:"followers" default:"null"`
 	Location           *string      `json:"location" default:"null"`
 	EngagementRate     *float64     `json:"engagement_rate" default:"null"`
@@ -144,6 +148,7 @@ type SignUpCompany struct {
 	Location           *string `json:"location"`
 	CompanyAccount     *string `json:"company_account"`
 	ManagerPhoneNumber *string `json:"manager_phone_number"`
+	ProleId            string  `json:"prole_id"`
 }
 
 type SignInInput struct {

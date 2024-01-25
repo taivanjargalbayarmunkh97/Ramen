@@ -2,6 +2,8 @@ package auth
 
 import (
 	"example.com/ramen/initializers"
+	_map "example.com/ramen/models/map"
+	reference2 "example.com/ramen/models/reference"
 	"example.com/ramen/models/user"
 	"example.com/ramen/utils"
 	"fmt"
@@ -154,7 +156,7 @@ func SignUpInfluencer(c *fiber.Ctx) error {
 // @Router /auth/signup/company [post]
 func SignUpCompany(c *fiber.Ctx) error {
 	var payload *user.SignUpCompany
-
+	tx := initializers.DB.Begin()
 	if err := c.BodyParser(&payload); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "message": err.Error()})
 	}
@@ -187,14 +189,39 @@ func SignUpCompany(c *fiber.Ctx) error {
 		ManagerPhoneNumber: payload.ManagerPhoneNumber,
 	}
 
-	result := initializers.DB.Create(&newUser)
+	result := tx.Create(&newUser)
 
 	if result.Error != nil && strings.Contains(result.Error.Error(), "duplicate key value violates unique") {
+		tx.Rollback()
 		return c.Status(fiber.StatusConflict).JSON(fiber.Map{"status": "fail", "message": "User with that email already exists"})
 	} else if result.Error != nil {
+		tx.Rollback()
 		return c.Status(fiber.StatusBadGateway).JSON(fiber.Map{"status": "error", "message": "Something bad happened"})
 	}
 
+	if payload.ProleId != "" {
+		var reference reference2.Reference
+		result := initializers.DB.Where("id = ?", payload.ProleId).First(&reference)
+		if result.RowsAffected == 0 {
+			tx.Rollback()
+			return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+				ResponseMsg: "Reference олдсонгүй"})
+		}
+		var mapDb _map.Map
+		mapDb.EntityId = newUser.ID.String()
+		mapDb.Name = reference.Name
+		mapDb.ReferenceId = reference.ID
+		mapDb.EntityName = "Company"
+
+		err := tx.Create(&mapDb)
+		if err.Error != nil {
+			tx.Rollback()
+			return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+				ResponseMsg: "Алдаа гарлаа", Data: err.Error.Error()})
+		}
+
+	}
+	tx.Commit()
 	return c.Status(fiber.StatusCreated).JSON(utils.ResponseObj{ResponseCode: fiber.StatusOK,
 		ResponseMsg: "Амжилттай бүртгэлээ", Data: newUser})
 

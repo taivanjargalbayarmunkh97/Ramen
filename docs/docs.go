@@ -1193,6 +1193,9 @@ const docTemplate = `{
                 "photo": {
                     "type": "string"
                 },
+                "prole_id": {
+                    "type": "string"
+                },
                 "role_id": {
                     "type": "string"
                 }
