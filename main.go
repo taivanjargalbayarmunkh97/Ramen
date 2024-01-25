@@ -13,7 +13,6 @@ import (
 	fiberSwagger "github.com/arsmn/fiber-swagger/v2"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2/middleware/logger"
 	"log"
 	"os"
 )
@@ -30,20 +29,25 @@ func init() {
 // @version 1.0
 // @description This is a sample API with Fiber and Swagger
 // @host http://103.168.56.249:8080
-// @BasePath /api
+// @BasePath /
 func main() {
+	app := apiRoutes()
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	log.Fatal(app.Listen(":" + port))
+}
+
+func apiRoutes() *fiber.App {
 	app := fiber.New()
 
-	app.Mount("/api", app)
-	app.Use(logger.New())
-	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "*",
-		AllowHeaders:     "Origin, Content-Type, Accept",
-		AllowMethods:     "GET, POST",
-		AllowCredentials: true,
-	}))
-
+	// Swagger documentation route
 	app.Get("/swagger/*", fiberSwagger.HandlerDefault)
+
+	// Custom Swagger configuration
 	app.Get("/swagger/*", fiberSwagger.New(fiberSwagger.Config{
 		URL:          "http://example.com/doc.json",
 		DeepLinking:  false,
@@ -55,7 +59,12 @@ func main() {
 		OAuth2RedirectUrl: "http://localhost:8080/swagger/oauth2-redirect.html",
 	}))
 
-	// Нэвтрэх, бүртгүүлэх, гарах
+	app.Use(cors.New())
+
+	// API routes
+	//app.Mount("/api", app)
+
+	// Authentication routes
 	app.Route("/auth", func(router fiber.Router) {
 		router.Post("/signup/admin", auth.SignUpAdmin)
 		router.Post("/signup/influencer", auth.SignUpInfluencer)
@@ -108,10 +117,5 @@ func main() {
 		})
 	})
 
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
-
-	log.Fatal(app.Listen(":" + port))
+	return app
 }
