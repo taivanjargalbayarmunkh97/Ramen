@@ -33,9 +33,8 @@ func init() {
 // @BasePath /api
 func main() {
 	app := fiber.New()
-	micro := fiber.New()
 
-	app.Mount("/api", micro)
+	app.Mount("/api", app)
 	app.Use(logger.New())
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     "*",
@@ -45,22 +44,19 @@ func main() {
 	}))
 
 	app.Get("/swagger/*", fiberSwagger.HandlerDefault)
-	app.Get("/swagger/*", fiberSwagger.New(fiberSwagger.Config{ // custom
-		URL:         "http://example.com/doc.json",
-		DeepLinking: false,
-		// Expand ("list") or Collapse ("none") tag groups by default
+	app.Get("/swagger/*", fiberSwagger.New(fiberSwagger.Config{
+		URL:          "http://example.com/doc.json",
+		DeepLinking:  false,
 		DocExpansion: "none",
-		// Prefill OAuth ClientId on Authorize popup
 		OAuth: &fiberSwagger.OAuthConfig{
 			AppName:  "OAuth Provider",
 			ClientId: "21bb4edc-05a7-4afc-86f1-2e151e4ba6e2",
 		},
-		// Ability to change OAuth2 redirect uri location
 		OAuth2RedirectUrl: "http://localhost:8080/swagger/oauth2-redirect.html",
 	}))
 
 	// Нэвтрэх, бүртгүүлэх, гарах
-	micro.Route("/auth", func(router fiber.Router) {
+	app.Route("/auth", func(router fiber.Router) {
 		router.Post("/signup/admin", auth.SignUpAdmin)
 		router.Post("/signup/influencer", auth.SignUpInfluencer)
 		router.Post("/signup/company", auth.SignUpCompany)
@@ -69,19 +65,19 @@ func main() {
 	})
 
 	// Үндсэн хэрэглэгчийн мэдээлэл
-	micro.Route("/users", func(router fiber.Router) {
+	app.Route("/users", func(router fiber.Router) {
 		router.Get("/me", middleware.DeserializeUser, user.GetMe)
 		router.Post("/list", middleware.DeserializeUser, user.GetUserList)
 		router.Put("/:user_id", middleware.DeserializeUser, user.UpdateUser)
 	})
 
 	// File
-	micro.Route("/file", func(router fiber.Router) {
+	app.Route("/file", func(router fiber.Router) {
 		router.Get("/:name", middleware.DeserializeUser, file.GetFile)
 	})
 
 	// Хэрэглэгчийн эрх
-	micro.Route("/role", func(router fiber.Router) {
+	app.Route("/role", func(router fiber.Router) {
 		router.Post("/list", middleware.DeserializeUser, role.GetRoleList)
 		router.Post("/create", middleware.DeserializeUser, role.CreateRole)
 		router.Put("/:id", middleware.DeserializeUser, role.UpdateRole)
@@ -89,7 +85,7 @@ func main() {
 	})
 
 	// Агент
-	micro.Route("/agent", func(router fiber.Router) {
+	app.Route("/agent", func(router fiber.Router) {
 		router.Post("/list", middleware.DeserializeUser, agency.GetAgentList)
 		router.Get("/:id", middleware.DeserializeUser, agency.GetAgent)
 		router.Post("/create", middleware.DeserializeUser, agency.CreateAgency)
@@ -97,18 +93,18 @@ func main() {
 		router.Delete("/:id", middleware.DeserializeUser, agency.DeleteUser)
 	})
 
-	micro.Get("/healthchecker", func(c *fiber.Ctx) error {
+	app.Get("/healthchecker", func(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
 			"status":  "success",
 			"message": "JWT Authentication with Golang, Fiber, and GORM",
 		})
 	})
 
-	micro.All("*", func(c *fiber.Ctx) error {
+	app.All("*", func(c *fiber.Ctx) error {
 		path := c.Path()
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"status":  "fail",
-			"message": fmt.Sprintf("Path: %v does not exists on this server", path),
+			"message": fmt.Sprintf("Path: %v does not exist on this server", path),
 		})
 	})
 
@@ -118,5 +114,4 @@ func main() {
 	}
 
 	log.Fatal(app.Listen(":" + port))
-
 }
