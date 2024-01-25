@@ -3,6 +3,7 @@ package initializers
 import (
 	"example.com/ramen/models/Agency"
 	"example.com/ramen/models/file"
+	"example.com/ramen/models/reference"
 	"example.com/ramen/models/role"
 	"example.com/ramen/models/user"
 	"fmt"
@@ -34,6 +35,7 @@ func ConnectDB(config *Config) {
 		&Agency.Agency{},
 		&role.Role{},
 		&file.File{},
+		&reference.Reference{},
 	)
 	if err != nil {
 		log.Fatal("Migration Failed:  \n", err.Error())

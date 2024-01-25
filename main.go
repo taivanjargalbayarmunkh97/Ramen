@@ -4,6 +4,7 @@ import (
 	"example.com/ramen/controllers/agency"
 	"example.com/ramen/controllers/auth"
 	"example.com/ramen/controllers/file"
+	"example.com/ramen/controllers/reference"
 	"example.com/ramen/controllers/role"
 	"example.com/ramen/controllers/user"
 	_ "example.com/ramen/docs"
@@ -100,6 +101,15 @@ func apiRoutes() *fiber.App {
 		router.Post("/create", middleware.DeserializeUser, agency.CreateAgency)
 		router.Put("/:id", middleware.DeserializeUser, agency.UpdateAgent)
 		router.Delete("/:id", middleware.DeserializeUser, agency.DeleteUser)
+	})
+
+	// Reference
+	app.Route("/reference", func(router fiber.Router) {
+		router.Post("/list", middleware.DeserializeUser, reference.ListReference)
+		router.Get("/:id", middleware.DeserializeUser, reference.GetReference)
+		router.Post("/", middleware.DeserializeUser, reference.CreateReference)
+		router.Put("/:id", middleware.DeserializeUser, reference.UpdateReference)
+		router.Delete("/:id", middleware.DeserializeUser, reference.DeleteReference)
 	})
 
 	app.Get("/healthchecker", func(c *fiber.Ctx) error {

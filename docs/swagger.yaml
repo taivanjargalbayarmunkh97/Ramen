@@ -1,4 +1,4 @@
-basePath: /api
+basePath: /
 definitions:
   Agency.CreateAgency:
     properties:
@@ -41,6 +41,42 @@ definitions:
         type: string
       website:
         type: string
+    type: object
+  reference.CreateReference:
+    properties:
+      code:
+        type: string
+      description:
+        type: string
+      field1:
+        type: string
+      field2:
+        type: string
+      field3:
+        type: string
+      name:
+        type: string
+    required:
+    - code
+    - name
+    type: object
+  reference.UpdateReference:
+    properties:
+      code:
+        type: string
+      description:
+        type: string
+      field1:
+        type: string
+      field2:
+        type: string
+      field3:
+        type: string
+      name:
+        type: string
+    required:
+    - code
+    - name
     type: object
   role.RoleCreateInput:
     properties:
@@ -570,6 +606,147 @@ paths:
       summary: Get file by name
       tags:
       - File
+  /reference:
+    post:
+      consumes:
+      - application/json
+      description: Create a new reference
+      parameters:
+      - description: Reference
+        in: body
+        name: reference
+        required: true
+        schema:
+          $ref: '#/definitions/reference.CreateReference'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a new reference
+      tags:
+      - Reference
+  /reference/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete reference
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete reference
+      tags:
+      - Reference
+    get:
+      consumes:
+      - application/json
+      description: Get reference
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+      security:
+      - ApiKeyAuth: []
+      summary: Get reference
+      tags:
+      - Reference
+    put:
+      consumes:
+      - application/json
+      description: Update reference
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: UpdateReference
+        in: body
+        name: reference
+        required: true
+        schema:
+          $ref: '#/definitions/reference.UpdateReference'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+      security:
+      - ApiKeyAuth: []
+      summary: Update reference
+      tags:
+      - Reference
+  /reference/list:
+    post:
+      consumes:
+      - application/json
+      description: Get reference list
+      parameters:
+      - description: RequestObj
+        in: body
+        name: reference
+        required: true
+        schema:
+          $ref: '#/definitions/utils.RequestObj'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+      security:
+      - ApiKeyAuth: []
+      summary: Get reference list
+      tags:
+      - Reference
   /role/{id}:
     delete:
       consumes:
