@@ -42,6 +42,60 @@ definitions:
       website:
         type: string
     type: object
+  Company.CreateCompany:
+    properties:
+      address:
+        type: string
+      areas_of_activity:
+        type: string
+      city:
+        type: string
+      description:
+        type: string
+      email:
+        type: string
+      image:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      website:
+        type: string
+    required:
+    - address
+    - areas_of_activity
+    - city
+    - description
+    - email
+    - image
+    - name
+    - phone
+    - website
+    type: object
+  Company.UpdateCompany:
+    properties:
+      address:
+        type: string
+      areas_of_activity:
+        type: string
+      city:
+        type: string
+      description:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      image:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      website:
+        type: string
+    type: object
   reference.CreateReference:
     properties:
       code:
@@ -583,6 +637,142 @@ paths:
       summary: Sign up influencer
       tags:
       - Auth
+  /company:
+    post:
+      consumes:
+      - application/json
+      description: Create company
+      parameters:
+      - description: CreateCompany
+        in: body
+        name: company
+        required: true
+        schema:
+          $ref: '#/definitions/Company.CreateCompany'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+      security:
+      - ApiKeyAuth: []
+      summary: Create company
+      tags:
+      - Company
+    put:
+      consumes:
+      - application/json
+      description: Update company
+      parameters:
+      - description: UpdateCompany
+        in: body
+        name: company
+        required: true
+        schema:
+          $ref: '#/definitions/Company.UpdateCompany'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+      security:
+      - ApiKeyAuth: []
+      summary: Update company
+      tags:
+      - Company
+  /company/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete company
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete company
+      tags:
+      - Company
+    get:
+      consumes:
+      - application/json
+      description: Get company
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+      security:
+      - ApiKeyAuth: []
+      summary: Get company
+      tags:
+      - Company
+  /company/list:
+    post:
+      consumes:
+      - application/json
+      description: Get company list
+      parameters:
+      - description: RequestObj
+        in: body
+        name: company
+        required: true
+        schema:
+          $ref: '#/definitions/utils.RequestObj'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+      security:
+      - ApiKeyAuth: []
+      summary: Get company list
+      tags:
+      - Company
   /files/{name}:
     get:
       consumes:

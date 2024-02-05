@@ -80,7 +80,7 @@ func SignUpAdmin(c *fiber.Ctx) error {
 // @Router /auth/signup/influencer [post]
 func SignUpInfluencer(c *fiber.Ctx) error {
 	var payload *user.SignUpInfluencer
-
+	tx := initializers.DB.Begin()
 	if err := c.BodyParser(&payload); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "message": err.Error()})
 	}
@@ -124,7 +124,7 @@ func SignUpInfluencer(c *fiber.Ctx) error {
 		PhoneNumber:       payload.PhoneNumber,
 	}
 
-	result := initializers.DB.Create(&newUser)
+	result := tx.Create(&newUser)
 
 	if result.Error != nil && strings.Contains(result.Error.Error(), "duplicate key value violates unique") {
 		return c.Status(fiber.StatusConflict).JSON(fiber.Map{"status": "fail", "message": "User with that email already exists"})
@@ -133,12 +133,15 @@ func SignUpInfluencer(c *fiber.Ctx) error {
 	}
 
 	if payload.Photo != "" {
-		err := utils.FileUpload(payload.Photo, newUser.ID, "Influencer")
+		err := utils.FileUpload(payload.Photo, newUser.ID, "Influencer", tx)
 		if err != nil {
+			tx.Rollback()
 			return c.Status(http.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: http.StatusBadRequest,
 				ResponseMsg: err.Error()})
 		}
 	}
+
+	tx.Commit()
 
 	return c.Status(fiber.StatusCreated).JSON(utils.ResponseObj{ResponseCode: fiber.StatusOK,
 		ResponseMsg: "Амжилттай бүртгэлээ", Data: newUser})

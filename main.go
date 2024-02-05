@@ -3,6 +3,7 @@ package main
 import (
 	"example.com/ramen/controllers/agency"
 	"example.com/ramen/controllers/auth"
+	"example.com/ramen/controllers/company"
 	"example.com/ramen/controllers/file"
 	"example.com/ramen/controllers/reference"
 	"example.com/ramen/controllers/role"
@@ -101,6 +102,15 @@ func apiRoutes() *fiber.App {
 		router.Post("/create", middleware.DeserializeUser, agency.CreateAgency)
 		router.Put("/:id", middleware.DeserializeUser, agency.UpdateAgent)
 		router.Delete("/:id", middleware.DeserializeUser, agency.DeleteUser)
+	})
+
+	// Компани
+	app.Route("/company", func(router fiber.Router) {
+		router.Post("/list", middleware.DeserializeUser, company.ListCompany)
+		router.Get("/:id", middleware.DeserializeUser, company.GetCompany)
+		router.Post("/", middleware.DeserializeUser, company.CreateCompany)
+		router.Put("/", middleware.DeserializeUser, company.UpdateCompany)
+		router.Delete("/:id", middleware.DeserializeUser, company.DeleteCompany)
 	})
 
 	// Reference

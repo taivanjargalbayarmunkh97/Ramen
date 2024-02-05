@@ -11,7 +11,7 @@ import (
 )
 
 type User struct {
-	ID                 *uuid.UUID     `json:"id" gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
+	ID                 uuid.UUID      `json:"id" gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
 	Name               string         `json:"name" default:"null"`
 	Email              string         `json:"email" default:"null" gorm:"uniqueIndex"`
 	PhoneNumber        string         `json:"phone_number" default:"null"`
@@ -95,7 +95,7 @@ type UserUpdate struct {
 
 func (u User) FilterUserRecord(user *User) UserResponse {
 	return UserResponse{
-		ID:    *user.ID,
+		ID:    user.ID,
 		Name:  user.Name,
 		Email: user.Email,
 		Role:  user.Role,
