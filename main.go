@@ -84,7 +84,7 @@ func apiRoutes() *fiber.App {
 
 	// File
 	app.Route("/file", func(router fiber.Router) {
-		router.Get("/:name", middleware.DeserializeUser, file.GetFile)
+		router.Get("/:name", file.GetFile)
 	})
 
 	// Хэрэглэгчийн эрх

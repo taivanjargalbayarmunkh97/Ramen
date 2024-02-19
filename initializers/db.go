@@ -35,11 +35,11 @@ func ConnectDB(config *Config) {
 	err = DB.AutoMigrate(
 		&user.User{},
 		&Agency.Agency{},
+		&Company.Company{},
 		&role.Role{},
 		&file.File{},
 		&reference.Reference{},
 		&_map.Map{},
-		&Company.Company{},
 	)
 	if err != nil {
 		log.Fatal("Migration Failed:  \n", err.Error())
