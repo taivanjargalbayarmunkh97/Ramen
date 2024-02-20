@@ -165,6 +165,11 @@ definitions:
     required:
     - name
     type: object
+  user.Base64Struct:
+    properties:
+      base64:
+        type: string
+    type: object
   user.SignInInput:
     properties:
       email:
@@ -270,7 +275,7 @@ definitions:
         minLength: 8
         type: string
       photo:
-        type: string
+        $ref: '#/definitions/user.Base64Struct'
     required:
     - email
     - name

@@ -28,26 +28,29 @@ import (
 // @Router /auth/signup/admin [post]
 func SignUpAdmin(c *fiber.Ctx) error {
 	var payload *user.SignUpInput
-
+	tx := initializers.DB.Begin()
 	if err := c.BodyParser(&payload); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "message": err.Error()})
+		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest, ResponseMsg: err.Error()})
 	}
 
 	errors := user.ValidateStruct(payload)
 	if errors != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "errors": errors})
+		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+			ResponseMsg: "Утга зөв эсэхийг шалгана уу", Data: errors})
 
 	}
 
 	if payload.Password != payload.PasswordConfirm {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "message": "Passwords do not match"})
+		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+			ResponseMsg: "Passwords do not match"})
 
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(payload.Password), bcrypt.DefaultCost)
 
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "message": err.Error()})
+		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+			ResponseMsg: err.Error()})
 	}
 
 	newUser := user.User{
@@ -56,15 +59,24 @@ func SignUpAdmin(c *fiber.Ctx) error {
 		Password: string(hashedPassword),
 	}
 
-	result := initializers.DB.Create(&newUser)
+	if err := tx.Create(&newUser).Error; err != nil {
+		tx.Rollback()
+		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+			ResponseMsg: err.Error()})
 
-	if result.Error != nil && strings.Contains(result.Error.Error(), "duplicate key value violates unique") {
-		return c.Status(fiber.StatusConflict).JSON(fiber.Map{"status": "fail", "message": "User with that email already exists"})
-	} else if result.Error != nil {
-		return c.Status(fiber.StatusBadGateway).JSON(fiber.Map{"status": "error", "message": "Something bad happened"})
+	}
+	if payload.Photo.Base64 != "" {
+		err := utils.FileUpload(payload.Photo.Base64, newUser.ID, "Influencer", tx)
+		if err != nil {
+			tx.Rollback()
+			return c.Status(http.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: http.StatusBadRequest,
+				ResponseMsg: err.Error()})
+		}
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(utils.ResponseObj{ResponseCode: fiber.StatusOK,
+	tx.Commit()
+
+	return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusOK,
 		ResponseMsg: "Амжилттай бүртгэлээ", Data: newUser})
 }
 

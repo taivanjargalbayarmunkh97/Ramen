@@ -1436,6 +1436,14 @@ const docTemplate = `{
                 }
             }
         },
+        "user.Base64Struct": {
+            "type": "object",
+            "properties": {
+                "base64": {
+                    "type": "string"
+                }
+            }
+        },
         "user.SignInInput": {
             "type": "object",
             "required": [
@@ -1595,7 +1603,7 @@ const docTemplate = `{
                     "minLength": 8
                 },
                 "photo": {
-                    "type": "string"
+                    "$ref": "#/definitions/user.Base64Struct"
                 }
             }
         },

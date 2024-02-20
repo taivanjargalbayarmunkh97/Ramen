@@ -150,6 +150,6 @@ func DeleteRole(c *fiber.Ctx) error {
 	initializers.DB.Delete(&role)
 
 	return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusOK,
-		ResponseMsg: "Амжилттай бүртгэлээ"})
+		ResponseMsg: "Амжилттай устгагдлаа"})
 
 }

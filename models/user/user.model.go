@@ -106,11 +106,15 @@ func (u User) FilterUserRecord(user *User) UserResponse {
 }
 
 type SignUpInput struct {
-	Name            string `json:"name" validate:"required"`
-	Email           string `json:"email" validate:"required"`
-	Password        string `json:"password" validate:"required,min=8"`
-	PasswordConfirm string `json:"passwordConfirm" validate:"required,min=8"`
-	Photo           string `json:"photo"`
+	Name            string       `json:"name" validate:"required"`
+	Email           string       `json:"email" validate:"required"`
+	Password        string       `json:"password" validate:"required,min=8"`
+	PasswordConfirm string       `json:"passwordConfirm" validate:"required,min=8"`
+	Photo           Base64Struct `json:"photo"`
+}
+
+type Base64Struct struct {
+	Base64 string `json:"base64"`
 }
 
 type SignUpInfluencer struct {
