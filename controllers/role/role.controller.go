@@ -24,12 +24,12 @@ func CreateRole(c *fiber.Ctx) error {
 	var role role.Role
 
 	if err := c.BodyParser(&payload); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest, ResponseMsg: err.Error()})
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest, ResponseMsg: err.Error()})
 	}
 
 	errors := user.ValidateStruct(payload)
 	if errors != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: "Утга зөв эсэхийг шалгана уу", Data: errors})
 	}
 
@@ -99,18 +99,18 @@ func UpdateRole(c *fiber.Ctx) error {
 	var role role.Role
 
 	if err := c.BodyParser(&payload); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest, ResponseMsg: err.Error()})
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest, ResponseMsg: err.Error()})
 	}
 
 	errors := user.ValidateStruct(payload)
 	if errors != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: "Утга зөв эсэхийг шалгана уу", Data: errors})
 	}
 
 	result := initializers.DB.First(&role, id)
 	if result.RowsAffected == 0 {
-		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: "Хэрэглэгчийн эрх олдсонгүй"})
 	}
 
@@ -143,7 +143,7 @@ func DeleteRole(c *fiber.Ctx) error {
 
 	result := initializers.DB.First(&role, id)
 	if result.RowsAffected == 0 {
-		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: "Хэрэглэгчийн эрх олдсонгүй"})
 	}
 

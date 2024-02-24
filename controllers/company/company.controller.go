@@ -1,12 +1,13 @@
 package company
 
 import (
+	"net/http"
+
 	"example.com/ramen/initializers"
 	"example.com/ramen/models/Company"
 	"example.com/ramen/models/file"
 	"example.com/ramen/utils"
 	"github.com/gofiber/fiber/v2"
-	"net/http"
 )
 
 // ListCompany godoc
@@ -91,7 +92,7 @@ func CreateCompany(c *fiber.Ctx) error {
 	var company Company.Company
 	tx := initializers.DB.Begin()
 	if err := c.BodyParser(&payload); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: err.Error()})
 	}
 	company.Name = payload.Name
@@ -105,14 +106,14 @@ func CreateCompany(c *fiber.Ctx) error {
 
 	if err := tx.Create(&company).Error; err != nil {
 		tx.Rollback()
-		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: err.Error()})
 	}
 	if payload.Image != "" {
 		err := utils.FileUpload(payload.Image, company.ID, "company", tx)
 		if err != nil {
 			tx.Rollback()
-			return c.Status(http.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: http.StatusBadRequest,
+			return c.Status(http.StatusOK).JSON(utils.ResponseObj{ResponseCode: http.StatusBadRequest,
 				ResponseMsg: err.Error()})
 		}
 	}
@@ -139,12 +140,12 @@ func UpdateCompany(c *fiber.Ctx) error {
 	var company Company.Company
 	tx := initializers.DB.Begin()
 	if err := c.BodyParser(&payload); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: err.Error()})
 	}
 	result := tx.Where("id = ?", payload.Id).First(&company)
 	if result.RowsAffected == 0 {
-		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: "Олдсонгүй"})
 
 	}
@@ -159,7 +160,7 @@ func UpdateCompany(c *fiber.Ctx) error {
 
 	if err := tx.Save(&company).Error; err != nil {
 		tx.Rollback()
-		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: err.Error()})
 	}
 
@@ -169,7 +170,7 @@ func UpdateCompany(c *fiber.Ctx) error {
 		err := utils.FileUpload(payload.Image, company.ID, "company", tx)
 		if err != nil {
 			tx.Rollback()
-			return c.Status(http.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: http.StatusBadRequest,
+			return c.Status(http.StatusOK).JSON(utils.ResponseObj{ResponseCode: http.StatusBadRequest,
 				ResponseMsg: err.Error()})
 		}
 	}
@@ -195,7 +196,7 @@ func DeleteCompany(c *fiber.Ctx) error {
 	var company Company.Company
 	result := initializers.DB.Where("id = ?", id).Delete(&company)
 	if result.Error != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: "Алдаа гарлаа", Data: result.Error.Error()})
 	}
 	return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusOK,

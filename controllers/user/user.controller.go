@@ -5,6 +5,9 @@ import (
 	user "example.com/ramen/models/user"
 	"example.com/ramen/utils"
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
+	"net/http"
 )
 
 // GetMe godoc
@@ -22,13 +25,13 @@ func GetMe(c *fiber.Ctx) error {
 	id := c.Locals("user")
 
 	if id == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: "Хэрэглэгч олдсонгүй id"})
 	}
 
 	result := initializers.DB.Where("id = ?", id).Preload("Photo").Preload("PRole").First(&user)
 	if result.RowsAffected == 0 {
-		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest, ResponseMsg: "Хэрэглэгч олдсонгүй"})
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest, ResponseMsg: "Хэрэглэгч олдсонгүй"})
 	}
 
 	return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusOK, ResponseMsg: "Амжилттай",
@@ -57,7 +60,7 @@ func GetUserList(c *fiber.Ctx) error {
 	}
 
 	conn = initializers.DB.
-		Model(&user.User{}).Preload("Photo").Preload("PRole").
+		Model(&user.User{}).Preload("Photo").Preload("Photo1").Preload("Photo2").Preload("PRole").Preload("Role").
 		Scopes(utils.Filter(request.Filter))
 
 	pagination := utils.Pagination{CurrentPageNo: request.PageNo, PerPage: request.PerPage, Sort: request.Sort}
@@ -88,7 +91,7 @@ func UpdateUser(c *fiber.Ctx) error {
 	id := c.Params("user_id")
 
 	if id == "" {
-		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: "user_id оруулна уу"})
 	}
 
@@ -96,19 +99,112 @@ func UpdateUser(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: err.Error()})
 	}
-
-	result := initializers.DB.Where("id = ?", id).First(&users)
+	tx := initializers.DB.Begin()
+	result := tx.Where("id = ?", id).First(&users)
 	if result.RowsAffected == 0 {
-		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest, ResponseMsg: "Хэрэглэгч олдсонгүй"})
+		tx.Rollback()
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest, ResponseMsg: "Хэрэглэгч олдсонгүй"})
 	}
 
-	result = initializers.DB.Model(&users).Updates(request)
+	if request.Password != "" {
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.DefaultCost)
+		if err != nil {
+			tx.Rollback()
+			return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest, ResponseMsg: err.Error()})
+		}
+		request.Password = string(hashedPassword)
+	}
+	var base64String string
+	if request.Photo != nil && request.Photo.Base64 != "" {
+		base64String = request.Photo.Base64
+	}
+
+	users.Name = request.Name
+	users.Email = request.Email
+	users.PhoneNumber = request.PhoneNumber
+	users.Password = request.Password
+	users.Provider = request.Provider
+	users.Followers = request.Followers
+	users.Location = request.Location
+	users.EngagementRate = request.EngagementRate
+	users.AverageLikes = request.AverageLikes
+	users.Bio = request.Bio
+	users.TotalPosts = request.TotalPosts
+	users.AvgLikes = request.AvgLikes
+	users.AvgComments = request.AvgComments
+	users.AvgViews = request.AvgViews
+	users.AvgReelPlays = request.AvgReelPlays
+	users.GenderSplit = request.GenderSplit
+	users.AudienceInterests = request.AudienceInterests
+	users.PopularPosts = request.PopularPosts
+	users.InfluencerIgName = request.InfluencerIgName
+	users.CompanyAccount = request.CompanyAccount
+	users.ManagerPhoneNumber = request.ManagerPhoneNumber
+
+	result = tx.Save(&users)
 	if result.Error != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+		tx.Rollback()
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: "Алдаа гарлаа", Data: result.Error.Error()})
 	}
 
+	if base64String != "" {
+		u, err := uuid.Parse(id)
+		if err != nil {
+			tx.Rollback()
+			return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+				ResponseMsg: err.Error()})
+		}
+		err1 := utils.FileUpload(base64String, u, "", tx)
+		if err1 != nil {
+			tx.Rollback()
+			return c.Status(http.StatusOK).JSON(utils.ResponseObj{ResponseCode: http.StatusBadRequest,
+				ResponseMsg: err.Error()})
+		}
+
+	}
+
+	tx.Commit()
 	return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusOK,
 		ResponseMsg: "Амжилттай шинэчиллээ", Data: users})
 
+}
+
+// DeleteUser godoc
+// @Summary Delete user
+// @Description Delete user
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param user_id path string true "ID"
+// @Security ApiKeyAuth
+// @Success 200 {object} string
+// @Failure 400 {object} string
+// @Router /users/{user_id} [delete]
+func DeleteUser(c *fiber.Ctx) error {
+	var users user.User
+	id := c.Params("user_id")
+
+	if id == "" {
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+			ResponseMsg: "user_id оруулна уу"})
+	}
+
+	tx := initializers.DB.Begin()
+	result := tx.Where("id = ?", id).First(&users)
+	if result.RowsAffected == 0 {
+		tx.Rollback()
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest, ResponseMsg: "Хэрэглэгч олдсонгүй"})
+	}
+
+	result = tx.Delete(&users)
+	if result.Error != nil {
+		tx.Rollback()
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+			ResponseMsg: "Алдаа гарлаа", Data: result.Error.Error()})
+	}
+
+	tx.Commit()
+	return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusOK,
+		ResponseMsg: "Амжилттай устгагдлаа", Data: users})
 }

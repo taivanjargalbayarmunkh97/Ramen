@@ -1,9 +1,11 @@
 package initializers
 
 import (
+	"example.com/ramen/models/file"
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -21,18 +23,26 @@ func ConnectDB(config *Config) {
 		os.Exit(1)
 	}
 
+	sqlDB, err := DB.DB()
+	if err != nil {
+		log.Fatal(err)
+	}
+	sqlDB.SetConnMaxLifetime(time.Minute * 3)
+	sqlDB.SetConnMaxIdleTime(time.Minute)
+
 	DB.Exec("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"")
 	//DB.Logger = logger.Default.LogMode(logger.Info)
 
 	log.Println("Running Migrations")
 	err = DB.AutoMigrate(
-	//&user.User{},
-	//&Agency.Agency{},
-	//&Company.Company{},
-	//&role.Role{},
-	//&file.File{},
-	//&reference.Reference{},
-	//&_map.Map{},
+		//&user.User{},
+		//&Agency.Agency{},
+		//&Company.Company{},
+		//&role.Role{},
+		&file.File{},
+		//&reference.Reference{},
+		//&_map.Map{},
+		//&_map.RoleMap{},
 	)
 	if err != nil {
 		log.Fatal("Migration Failed:  \n", err.Error())

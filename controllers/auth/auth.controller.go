@@ -1,15 +1,17 @@
 package auth
 
 import (
+	"example.com/ramen/models/role"
+	"fmt"
+	"net/http"
+	"strings"
+	"time"
+
 	"example.com/ramen/initializers"
 	_map "example.com/ramen/models/map"
 	reference2 "example.com/ramen/models/reference"
 	"example.com/ramen/models/user"
 	"example.com/ramen/utils"
-	"fmt"
-	"net/http"
-	"strings"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt"
@@ -30,18 +32,21 @@ func SignUpAdmin(c *fiber.Ctx) error {
 	var payload *user.SignUpInput
 	tx := initializers.DB.Begin()
 	if err := c.BodyParser(&payload); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest, ResponseMsg: err.Error()})
+		tx.Rollback()
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest, ResponseMsg: err.Error()})
 	}
 
 	errors := user.ValidateStruct(payload)
 	if errors != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+		tx.Rollback()
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: "Утга зөв эсэхийг шалгана уу", Data: errors})
 
 	}
 
 	if payload.Password != payload.PasswordConfirm {
-		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+		tx.Rollback()
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: "Passwords do not match"})
 
 	}
@@ -49,7 +54,8 @@ func SignUpAdmin(c *fiber.Ctx) error {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(payload.Password), bcrypt.DefaultCost)
 
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+		tx.Rollback()
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: err.Error()})
 	}
 
@@ -61,15 +67,39 @@ func SignUpAdmin(c *fiber.Ctx) error {
 
 	if err := tx.Create(&newUser).Error; err != nil {
 		tx.Rollback()
-		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: err.Error()})
 
 	}
+
+	var role role.Role
+	resultRef := tx.Where("id = ?", 1).First(&role)
+	if resultRef.RowsAffected == 0 {
+		tx.Rollback()
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+			ResponseMsg: "Role олдсонгүй"})
+
+	}
+
+	var roleMap _map.RoleMap
+	roleMap.EntityId = newUser.ID.String()
+	roleMap.Name = role.Name
+	roleMap.RoleId = role.Id
+	roleMap.EntityName = "Admin"
+
+	err1 := tx.Create(&roleMap)
+	if err1.Error != nil {
+		tx.Rollback()
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+			ResponseMsg: "Алдаа гарлаа", Data: err.Error()})
+
+	}
+
 	if payload.Photo.Base64 != "" {
 		err := utils.FileUpload(payload.Photo.Base64, newUser.ID, "Influencer", tx)
 		if err != nil {
 			tx.Rollback()
-			return c.Status(http.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: http.StatusBadRequest,
+			return c.Status(http.StatusOK).JSON(utils.ResponseObj{ResponseCode: http.StatusBadRequest,
 				ResponseMsg: err.Error()})
 		}
 	}
@@ -94,31 +124,49 @@ func SignUpInfluencer(c *fiber.Ctx) error {
 	var payload *user.SignUpInfluencer
 	tx := initializers.DB.Begin()
 	if err := c.BodyParser(&payload); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "message": err.Error()})
+		tx.Rollback()
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{
+			ResponseCode: fiber.StatusBadRequest,
+			ResponseMsg:  err.Error(),
+		})
 	}
 
 	errors := user.ValidateStruct(payload)
 	if errors != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "errors": errors})
+		tx.Rollback()
+		return c.Status(fiber.StatusOK).JSON(
+			utils.ResponseObj{
+				ResponseCode: fiber.StatusBadRequest,
+				ResponseMsg:  "Утга зөв эсэхийг шалгана уу",
+			})
 
 	}
 
 	if payload.Password != payload.PasswordConfirm {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "message": "Passwords do not match"})
+		tx.Rollback()
+		return c.Status(fiber.StatusOK).JSON(
+			utils.ResponseObj{
+				ResponseCode: fiber.StatusBadRequest,
+				ResponseMsg:  "Passwords do not match",
+			})
 
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(payload.Password), bcrypt.DefaultCost)
 
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "message": err.Error()})
+		tx.Rollback()
+		return c.Status(fiber.StatusOK).JSON(
+			utils.ResponseObj{
+				ResponseCode: fiber.StatusBadRequest,
+				ResponseMsg:  err.Error(),
+			})
 	}
 
 	newUser := user.User{
 		Name:              payload.Name,
 		Email:             strings.ToLower(payload.Email),
 		Password:          string(hashedPassword),
-		Role:              payload.RoleId,
 		InfluencerIgName:  payload.IgName,
 		Followers:         payload.Followers,
 		Location:          payload.Location,
@@ -139,23 +187,55 @@ func SignUpInfluencer(c *fiber.Ctx) error {
 	result := tx.Create(&newUser)
 
 	if result.Error != nil && strings.Contains(result.Error.Error(), "duplicate key value violates unique") {
-		return c.Status(fiber.StatusConflict).JSON(fiber.Map{"status": "fail", "message": "User with that email already exists"})
+		tx.Rollback()
+		return c.Status(fiber.StatusOK).JSON(
+			utils.ResponseObj{
+				ResponseCode: fiber.StatusBadRequest,
+				ResponseMsg:  "User with that email already exists",
+			})
 	} else if result.Error != nil {
-		return c.Status(fiber.StatusBadGateway).JSON(fiber.Map{"status": "error", "message": "Something bad happened"})
+		tx.Rollback()
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{
+			ResponseCode: fiber.StatusBadRequest,
+			ResponseMsg:  result.Error.Error(),
+		})
 	}
 
-	if payload.Photo != "" {
-		err := utils.FileUpload(payload.Photo, newUser.ID, "Influencer", tx)
+	var role role.Role
+	resultRef := tx.Where("id = ?", 2).First(&role)
+	if resultRef.RowsAffected == 0 {
+		tx.Rollback()
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+			ResponseMsg: "Role олдсонгүй"})
+
+	}
+
+	var roleMap _map.RoleMap
+	roleMap.EntityId = newUser.ID.String()
+	roleMap.Name = role.Name
+	roleMap.RoleId = role.Id
+	roleMap.EntityName = "Company"
+
+	err1 := tx.Create(&roleMap)
+	if err1.Error != nil {
+		tx.Rollback()
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+			ResponseMsg: "Алдаа гарлаа", Data: err.Error()})
+
+	}
+
+	if payload.Photo.Base64 != "" {
+		err := utils.FileUpload(payload.Photo.Base64, newUser.ID, "Influencer", tx)
 		if err != nil {
 			tx.Rollback()
-			return c.Status(http.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: http.StatusBadRequest,
+			return c.Status(http.StatusOK).JSON(utils.ResponseObj{ResponseCode: http.StatusBadRequest,
 				ResponseMsg: err.Error()})
 		}
 	}
 
 	tx.Commit()
 
-	return c.Status(fiber.StatusCreated).JSON(utils.ResponseObj{ResponseCode: fiber.StatusOK,
+	return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusOK,
 		ResponseMsg: "Амжилттай бүртгэлээ", Data: newUser})
 }
 
@@ -173,31 +253,33 @@ func SignUpCompany(c *fiber.Ctx) error {
 	var payload *user.SignUpCompany
 	tx := initializers.DB.Begin()
 	if err := c.BodyParser(&payload); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "message": err.Error()})
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest, ResponseMsg: err.Error()})
 	}
 
 	errors := user.ValidateStruct(payload)
 	if errors != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "errors": errors})
+		tx.Rollback()
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+			ResponseMsg: "Утга зөв эсэхийг шалгана уу", Data: errors})
 
 	}
 
 	if payload.Password != payload.PasswordConfirm {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "message": "Passwords do not match"})
+		tx.Rollback()
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest, ResponseMsg: "Passwords do not match"})
 
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(payload.Password), bcrypt.DefaultCost)
-
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "message": err.Error()})
+		tx.Rollback()
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest, ResponseMsg: err.Error()})
 	}
 
 	newUser := user.User{
 		Name:               payload.Name,
 		Email:              strings.ToLower(payload.Email),
 		Password:           string(hashedPassword),
-		Role:               payload.RoleId,
 		CompanyAccount:     payload.CompanyAccount,
 		Location:           payload.Location,
 		PhoneNumber:        payload.PhoneNumber,
@@ -208,10 +290,40 @@ func SignUpCompany(c *fiber.Ctx) error {
 
 	if result.Error != nil && strings.Contains(result.Error.Error(), "duplicate key value violates unique") {
 		tx.Rollback()
-		return c.Status(fiber.StatusConflict).JSON(fiber.Map{"status": "fail", "message": "User with that email already exists"})
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{
+			ResponseCode: fiber.StatusBadRequest,
+			ResponseMsg:  "User with that email already exists",
+		})
 	} else if result.Error != nil {
 		tx.Rollback()
-		return c.Status(fiber.StatusBadGateway).JSON(fiber.Map{"status": "error", "message": "Something bad happened"})
+		return c.Status(fiber.StatusBadGateway).JSON(
+			utils.ResponseObj{
+				ResponseCode: fiber.StatusBadGateway,
+				ResponseMsg:  "Something bad happened",
+			})
+	}
+
+	var role role.Role
+	resultRef := tx.Where("id = ?", 3).First(&role)
+	if resultRef.RowsAffected == 0 {
+		tx.Rollback()
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+			ResponseMsg: "Role олдсонгүй"})
+
+	}
+
+	var roleMap _map.RoleMap
+	roleMap.EntityId = newUser.ID.String()
+	roleMap.Name = role.Name
+	roleMap.RoleId = role.Id
+	roleMap.EntityName = "Company"
+
+	err1 := tx.Create(&roleMap)
+	if err1.Error != nil {
+		tx.Rollback()
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+			ResponseMsg: "Алдаа гарлаа", Data: err.Error()})
+
 	}
 
 	if payload.ProleId != "" {
@@ -219,7 +331,7 @@ func SignUpCompany(c *fiber.Ctx) error {
 		result := initializers.DB.Where("id = ?", payload.ProleId).First(&reference)
 		if result.RowsAffected == 0 {
 			tx.Rollback()
-			return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+			return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 				ResponseMsg: "Reference олдсонгүй"})
 		}
 		var mapDb _map.Map
@@ -231,13 +343,23 @@ func SignUpCompany(c *fiber.Ctx) error {
 		err := tx.Create(&mapDb)
 		if err.Error != nil {
 			tx.Rollback()
-			return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+			return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 				ResponseMsg: "Алдаа гарлаа", Data: err.Error.Error()})
 		}
 
 	}
+
+	if payload.Photo.Base64 != "" {
+		err := utils.FileUpload(payload.Photo.Base64, newUser.ID, "Company", tx)
+		if err != nil {
+			tx.Rollback()
+			return c.Status(http.StatusOK).JSON(utils.ResponseObj{ResponseCode: http.StatusBadRequest,
+				ResponseMsg: err.Error()})
+		}
+	}
+
 	tx.Commit()
-	return c.Status(fiber.StatusCreated).JSON(utils.ResponseObj{ResponseCode: fiber.StatusOK,
+	return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusOK,
 		ResponseMsg: "Амжилттай бүртгэлээ", Data: newUser})
 
 }
@@ -256,24 +378,24 @@ func SignInUser(c *fiber.Ctx) error {
 	var payload *user.SignInInput
 
 	if err := c.BodyParser(&payload); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "message": err.Error()})
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "fail", "message": err.Error()})
 	}
 
 	errors := user.ValidateStruct(payload)
 	if errors != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(errors)
+		return c.Status(fiber.StatusOK).JSON(errors)
 
 	}
 
 	var user user.User
 	result := initializers.DB.First(&user, "email = ?", strings.ToLower(payload.Email))
 	if result.Error != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "message": "Invalid email or Password"})
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "fail", "message": "Invalid email or Password"})
 	}
 
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(payload.Password))
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "message": "Invalid email or Password"})
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "fail", "message": "Invalid email or Password"})
 	}
 
 	config, _ := initializers.LoadConfig(".")

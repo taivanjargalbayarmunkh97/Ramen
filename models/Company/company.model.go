@@ -1,26 +1,25 @@
 package Company
 
 import (
-	"example.com/ramen/models/file"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"time"
 )
 
 type Company struct {
-	ID              uuid.UUID      `json:"id" gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
-	CreatedAt       time.Time      `json:"created_at" gorm:"autoCreateTime"`
-	UpdatedAt       time.Time      `json:"updated_at" gorm:"autoUpdateTime"`
-	DeletedAt       gorm.DeletedAt `json:"deleted_at" gorm:"index"`
-	Name            string         `json:"name"`
-	Description     string         `json:"description"`
-	Website         string         `json:"website"`
-	Email           string         `json:"email"`
-	Phone           string         `json:"phone"`
-	Address         string         `json:"address"`
-	Image           file.File      `json:"image" gorm:"foreignKey:CompanyParentId;references:ID"`
-	City            string         `json:"city"`
-	AreasOfActivity string         `json:"areas_of_activity"`
+	ID          uuid.UUID      `json:"id" gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
+	CreatedAt   time.Time      `json:"created_at" gorm:"autoCreateTime"`
+	UpdatedAt   time.Time      `json:"updated_at" gorm:"autoUpdateTime"`
+	DeletedAt   gorm.DeletedAt `json:"deleted_at" gorm:"index"`
+	Name        string         `json:"name"`
+	Description string         `json:"description"`
+	Website     string         `json:"website"`
+	Email       string         `json:"email"`
+	Phone       string         `json:"phone"`
+	Address     string         `json:"address"`
+	//Image           file.File      `json:"image" gorm:"foreignKey:CompanyParentId;references:ID"`
+	City            string `json:"city"`
+	AreasOfActivity string `json:"areas_of_activity"`
 }
 
 type CreateCompany struct {

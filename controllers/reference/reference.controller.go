@@ -24,12 +24,12 @@ func CreateReference(c *fiber.Ctx) error {
 	var reference reference.Reference
 
 	if err := c.BodyParser(&payload); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest, ResponseMsg: err.Error()})
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest, ResponseMsg: err.Error()})
 	}
 
 	errors := user.ValidateStruct(payload)
 	if errors != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: "Утга зөв эсэхийг шалгана уу", Data: errors})
 
 	}
@@ -42,7 +42,7 @@ func CreateReference(c *fiber.Ctx) error {
 	reference.Code = payload.Code
 	result := initializers.DB.Create(&reference)
 	if result.Error != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: "Алдаа гарлаа", Data: result.Error.Error()})
 	}
 
@@ -132,7 +132,7 @@ func UpdateReference(c *fiber.Ctx) error {
 	id := c.Params("id")
 
 	if id == "" {
-		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: "reference_id оруулна уу"})
 	}
 
@@ -143,7 +143,7 @@ func UpdateReference(c *fiber.Ctx) error {
 
 	result := initializers.DB.Where("id = ?", id).First(&referencedb)
 	if result.RowsAffected == 0 {
-		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: "Reference олдсонгүй"})
 	}
 
@@ -155,7 +155,7 @@ func UpdateReference(c *fiber.Ctx) error {
 	referencedb.Code = request.Code
 	result = initializers.DB.Save(&referencedb)
 	if result.Error != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: "Алдаа гарлаа", Data: result.Error.Error()})
 	}
 

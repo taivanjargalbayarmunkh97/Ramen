@@ -24,12 +24,12 @@ func CreateAgency(c *fiber.Ctx) error {
 	var agency Agency.Agency
 
 	if err := c.BodyParser(&payload); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest, ResponseMsg: err.Error()})
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest, ResponseMsg: err.Error()})
 	}
 
 	errors := user.ValidateStruct(payload)
 	if errors != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: "Утга зөв эсэхийг шалгана уу", Data: errors})
 
 	}
@@ -43,7 +43,7 @@ func CreateAgency(c *fiber.Ctx) error {
 	agency.City = payload.City
 	result := initializers.DB.Create(&agency)
 	if result.Error != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: "Алдаа гарлаа", Data: result.Error.Error()})
 	}
 
@@ -103,7 +103,7 @@ func GetAgent(c *fiber.Ctx) error {
 	var agent Agency.Agency
 	result := initializers.DB.First(&agent, "id = ?", id)
 	if result.Error != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: "Алдаа гарлаа", Data: result.Error.Error()})
 	}
 	return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusOK,
@@ -128,12 +128,12 @@ func UpdateAgent(c *fiber.Ctx) error {
 	var payload *Agency.UpdateAgency
 	var agent Agency.Agency
 	if err := c.BodyParser(&payload); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest, ResponseMsg: err.Error()})
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest, ResponseMsg: err.Error()})
 	}
 
 	errors := user.ValidateStruct(payload)
 	if errors != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: "Утга зөв эсэхийг шалгана уу", Data: errors})
 
 	}
@@ -141,7 +141,7 @@ func UpdateAgent(c *fiber.Ctx) error {
 	result := initializers.DB.Model(&agent).Where("id = ?", id).Updates(Agency.Agency{Name: payload.Name,
 		Address: payload.Address, Phone: payload.Phone, Email: payload.Email, Website: payload.Website, Description: payload.Description, City: payload.City})
 	if result.Error != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: "Алдаа гарлаа", Data: result.Error.Error()})
 	}
 
@@ -166,7 +166,7 @@ func DeleteUser(c *fiber.Ctx) error {
 	var agent Agency.Agency
 	result := initializers.DB.Delete(&agent, "id = ?", id)
 	if result.Error != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: "Алдаа гарлаа", Data: result.Error.Error()})
 	}
 	return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusOK,

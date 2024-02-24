@@ -199,7 +199,7 @@ definitions:
       phone_number:
         type: string
       photo:
-        type: string
+        $ref: '#/definitions/user.Base64Struct'
       prole_id:
         type: string
       role_id:
@@ -248,7 +248,7 @@ definitions:
       phone_number:
         type: string
       photo:
-        type: string
+        $ref: '#/definitions/user.Base64Struct'
       popular_posts:
         type: string
       role_id:
@@ -316,10 +316,13 @@ definitions:
         type: string
       name:
         type: string
+      password:
+        default: "null"
+        type: string
       phone_number:
         type: string
       photo:
-        type: string
+        $ref: '#/definitions/user.Base64Struct'
       popular_posts:
         type: string
       provider:
@@ -778,7 +781,7 @@ paths:
       summary: Get company list
       tags:
       - Company
-  /files/{name}:
+  /file/{name}:
     get:
       consumes:
       - application/json
@@ -1060,6 +1063,32 @@ paths:
       tags:
       - Role
   /users/{user_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete user
+      parameters:
+      - description: ID
+        in: path
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Delete user
+      tags:
+      - User
     put:
       consumes:
       - application/json

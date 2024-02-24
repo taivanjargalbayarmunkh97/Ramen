@@ -1,6 +1,10 @@
 package main
 
 import (
+	"fmt"
+	"log"
+	"os"
+
 	"example.com/ramen/controllers/agency"
 	"example.com/ramen/controllers/auth"
 	"example.com/ramen/controllers/company"
@@ -11,12 +15,9 @@ import (
 	_ "example.com/ramen/docs"
 	initializers2 "example.com/ramen/initializers"
 	"example.com/ramen/middleware"
-	"fmt"
 	fiberSwagger "github.com/arsmn/fiber-swagger/v2"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"log"
-	"os"
 )
 
 func init() {
@@ -80,6 +81,7 @@ func apiRoutes() *fiber.App {
 		router.Get("/me", middleware.DeserializeUser, user.GetMe)
 		router.Post("/list", middleware.DeserializeUser, user.GetUserList)
 		router.Put("/:user_id", middleware.DeserializeUser, user.UpdateUser)
+		router.Delete("/:user_id", middleware.DeserializeUser, user.DeleteUser)
 	})
 
 	// File

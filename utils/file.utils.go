@@ -2,12 +2,13 @@ package utils
 
 import (
 	base642 "encoding/base64"
-	"example.com/ramen/models/file"
 	"fmt"
-	"gorm.io/gorm"
 	"io/ioutil"
 	"net/http"
 	"strconv"
+
+	"example.com/ramen/models/file"
+	"gorm.io/gorm"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -23,7 +24,7 @@ func FileUpload(base64Image string, ParentId uuid.UUID, Category string, tx *gor
 	}
 	// 5mb limit
 	if len(decoded) > 5000000 {
-		return c.Status(http.StatusBadRequest).JSON(ResponseObj{ResponseCode: http.StatusBadRequest, ResponseMsg: "File size is too large"})
+		return c.Status(http.StatusOK).JSON(ResponseObj{ResponseCode: http.StatusBadRequest, ResponseMsg: "File size is too large"})
 	}
 	// generate uui for file name
 	uid := uuid.New()
@@ -34,18 +35,31 @@ func FileUpload(base64Image string, ParentId uuid.UUID, Category string, tx *gor
 		return c.Status(http.StatusInternalServerError).JSON(ResponseObj{ResponseCode: http.
 			StatusBadRequest, ResponseMsg: "File uploads failed"})
 	}
-
 	var file file.File
 
-	if Category == "company" {
+	if Category == "" {
+		err := tx.Where("parent_id = ? or company_parent_id = ? or influencer_parent_id = ?",
+			ParentId, ParentId, ParentId).Find(&file)
+		if err.Error != nil {
+			return err.Error
+		}
+		file.FileName = fileName
+		file.Size = size
+		file.FilePath = fmt.Sprintf("/uploads/%s", fileName)
+		if err := tx.Save(&file).Error; err != nil {
+			return err
+		}
+		return nil
+	}
+
+	if Category == "Company" {
 		file.CompanyParentId = ParentId.String()
 		file.Category = Category
 		file.FileName = fileName
 		file.Size = size
 		file.FilePath = fmt.Sprintf("/uploads/%s", fileName)
 	} else {
-
-		file.ParentId = ParentId.String()
+		file.InfluencerParentId = ParentId.String()
 		file.Category = Category
 		file.FileName = fileName
 		file.Size = size

@@ -15,7 +15,7 @@ import (
 //	@Param			name path string true "name"
 //	@Success		200		{string}  string  "OK"
 //	@Failure		400		{string}  error  "Bad Request"
-//	@Router			/files/{name} [get]
+//	@Router			/file/{name} [get]
 func GetFile(c *fiber.Ctx) error {
 	filename := c.Params("name")
 	filePath := "./uploads/" + filename

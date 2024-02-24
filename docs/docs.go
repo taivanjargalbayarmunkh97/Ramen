@@ -616,7 +616,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/files/{name}": {
+        "/file/{name}": {
             "get": {
                 "description": "Get file by name",
                 "consumes": [
@@ -1190,6 +1190,47 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Delete user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Delete user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
             }
         }
     },
@@ -1494,7 +1535,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "photo": {
-                    "type": "string"
+                    "$ref": "#/definitions/user.Base64Struct"
                 },
                 "prole_id": {
                     "type": "string"
@@ -1566,7 +1607,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "photo": {
-                    "type": "string"
+                    "$ref": "#/definitions/user.Base64Struct"
                 },
                 "popular_posts": {
                     "type": "string"
@@ -1658,11 +1699,15 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "password": {
+                    "type": "string",
+                    "default": "null"
+                },
                 "phone_number": {
                     "type": "string"
                 },
                 "photo": {
-                    "type": "string"
+                    "$ref": "#/definitions/user.Base64Struct"
                 },
                 "popular_posts": {
                     "type": "string"
