@@ -1244,6 +1244,7 @@ const docTemplate = `{
                 "email",
                 "name",
                 "phone",
+                "type",
                 "website"
             ],
             "properties": {
@@ -1264,6 +1265,12 @@ const docTemplate = `{
                 },
                 "phone": {
                     "type": "string"
+                },
+                "type": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "website": {
                     "type": "string"
@@ -1787,6 +1794,9 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/utils.FilterObj"
                     }
+                },
+                "glob_operation": {
+                    "type": "string"
                 },
                 "page_no": {
                     "type": "integer"

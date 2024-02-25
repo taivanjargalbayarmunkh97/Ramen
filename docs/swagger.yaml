@@ -14,6 +14,10 @@ definitions:
         type: string
       phone:
         type: string
+      type:
+        items:
+          type: string
+        type: array
       website:
         type: string
     required:
@@ -23,6 +27,7 @@ definitions:
     - email
     - name
     - phone
+    - type
     - website
     type: object
   Agency.UpdateAgency:
@@ -375,6 +380,8 @@ definitions:
         items:
           $ref: '#/definitions/utils.FilterObj'
         type: array
+      glob_operation:
+        type: string
       page_no:
         type: integer
       per_page:
