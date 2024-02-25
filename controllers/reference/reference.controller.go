@@ -73,7 +73,7 @@ func ListReference(c *fiber.Ctx) error {
 
 	conn = initializers.DB.
 		Model(&reference.Reference{}).
-		Scopes(utils.Filter(request.Filter))
+		Scopes(utils.Filter(request.Filter, request.GlobOperation))
 
 	pagination := utils.Pagination{CurrentPageNo: request.PageNo, PerPage: request.PerPage, Sort: request.Sort}
 	conn.Debug().

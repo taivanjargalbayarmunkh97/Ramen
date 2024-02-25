@@ -3,9 +3,14 @@ package agency
 import (
 	"example.com/ramen/initializers"
 	"example.com/ramen/models/Agency"
+	_map "example.com/ramen/models/map"
+	reference2 "example.com/ramen/models/reference"
 	"example.com/ramen/models/user"
 	"example.com/ramen/utils"
+	"fmt"
 	"github.com/gofiber/fiber/v2"
+	"gorm.io/gorm"
+	"reflect"
 )
 
 // CreateAgency godoc
@@ -41,11 +46,41 @@ func CreateAgency(c *fiber.Ctx) error {
 	agency.Website = payload.Website
 	agency.Description = payload.Description
 	agency.City = payload.City
-	result := initializers.DB.Create(&agency)
+	tx := initializers.DB.Begin()
+	result := tx.Create(&agency)
 	if result.Error != nil {
+		tx.Rollback()
 		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: "Алдаа гарлаа", Data: result.Error.Error()})
 	}
+
+	if len(payload.Type) > 0 {
+		var referrers reference2.Reference
+		for _, v := range payload.Type {
+			result := tx.Where("id = ?", v).First(&referrers)
+			if result.RowsAffected == 0 {
+				tx.Rollback()
+				return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+					ResponseMsg: "Алдаа гарлаа", Data: "Төрөл олдсонгүй"})
+			}
+
+			agencyReferrers := _map.AgencyMap{
+				Name:        referrers.Name,
+				ReferenceId: v,
+				EntityId:    agency.ID,
+				EntityName:  "agency",
+			}
+
+			result = tx.Create(&agencyReferrers)
+			if result.Error != nil {
+				tx.Rollback()
+				return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+					ResponseMsg: "Алдаа гарлаа", Data: result.Error.Error()})
+			}
+		}
+	}
+
+	tx.Commit()
 
 	return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusOK,
 		ResponseMsg: "Амжилттай бүртгэлээ", Data: agency})
@@ -73,9 +108,43 @@ func GetAgentList(c *fiber.Ctx) error {
 			ResponseMsg: err.Error()})
 	}
 
-	conn = initializers.DB.
-		Model(&Agency.Agency{}).
-		Scopes(utils.Filter(request.Filter))
+	var where string
+	var filter func(db *gorm.DB) *gorm.DB
+
+	for i, v := range request.Filter {
+		if v.FieldName == "type.id" {
+			if where != "" {
+				where += " and "
+			}
+
+			where = where + "ID in (" + "select entity_id from agency_maps where deleted_at is" +
+				" null and " +
+				" reference_id in ("
+			for i, val := range v.Values {
+				if i > 0 {
+					where += ", "
+				}
+				if reflect.TypeOf(val) == reflect.TypeOf(int(0)) {
+					where += fmt.Sprintf("%d", val)
+				} else {
+					where += fmt.Sprintf("'%s'", val)
+				}
+			}
+			where += "))"
+			filter = utils.Filter(request.Filter[i+1:], request.GlobOperation)
+		}
+	}
+	filter = utils.Filter(request.Filter, request.GlobOperation)
+
+	if where != "" {
+		conn = initializers.DB.
+			Model(&Agency.Agency{}).Preload("Type").Scopes(
+			filter).Where(where)
+	} else {
+		conn = initializers.DB.
+			Model(&Agency.Agency{}).Preload("Type").Scopes(
+			filter)
+	}
 
 	pagination := utils.Pagination{CurrentPageNo: request.PageNo, PerPage: request.PerPage, Sort: request.Sort}
 	conn.Debug().

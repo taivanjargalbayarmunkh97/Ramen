@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func Filter(filters []FilterObj) func(db *gorm.DB) *gorm.DB {
+func Filter(filters []FilterObj, globOp string) func(db *gorm.DB) *gorm.DB {
 	where := ""
 	for _, filter := range filters {
 		operation := "="
@@ -36,7 +36,11 @@ func Filter(filters []FilterObj) func(db *gorm.DB) *gorm.DB {
 		if where == "" {
 			where = fmt.Sprintf("%s ", FilterColumn(filter.FieldName, filter.FieldType, operation, filter.Value))
 		} else {
-			where = fmt.Sprintf("%s AND %s ", where, FilterColumn(filter.FieldName, filter.FieldType, operation, filter.Value))
+			if globOp == "or" {
+				where = fmt.Sprintf("%s OR %s ", where, FilterColumn(filter.FieldName, filter.FieldType, operation, filter.Value))
+			} else {
+				where = fmt.Sprintf("%s AND %s ", where, FilterColumn(filter.FieldName, filter.FieldType, operation, filter.Value))
+			}
 		}
 	}
 
@@ -100,7 +104,15 @@ func FilterColumn(columnName string, FieldType string, operation string, value s
 	if FieldType == "uuid" {
 		return UuidFilter(columnName, operation, value)
 	}
+	if FieldType == "boolean" {
+		return BooleanFilter(columnName, operation, value)
+	}
 	return TextFilter(columnName, operation, value)
+}
+
+func BooleanFilter(name string, operation string, value string) string {
+	return fmt.Sprintf("%s %s %s", name, operation, value)
+
 }
 
 func TextFilter(columnName string, operation string, value string) string {

@@ -1,6 +1,9 @@
 package _map
 
-import "gorm.io/gorm"
+import (
+	"github.com/google/uuid"
+	"gorm.io/gorm"
+)
 
 type Map struct {
 	gorm.Model
@@ -16,4 +19,12 @@ type RoleMap struct {
 	Name       string `json:"name"`
 	EntityName string `json:"entity_name"`
 	RoleId     uint64 `json:"role_id"`
+}
+
+type AgencyMap struct {
+	gorm.Model
+	EntityId    uuid.UUID `json:"entity_id" gorm:"type:uuid"`
+	Name        string    `json:"name"`
+	EntityName  string    `json:"entity_name"`
+	ReferenceId string    `json:"reference_id"`
 }

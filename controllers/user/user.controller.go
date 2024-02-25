@@ -29,7 +29,7 @@ func GetMe(c *fiber.Ctx) error {
 			ResponseMsg: "Хэрэглэгч олдсонгүй id"})
 	}
 
-	result := initializers.DB.Where("id = ?", id).Preload("Photo").Preload("PRole").First(&user)
+	result := initializers.DB.Where("id = ?", id).Preload("Photo").Preload("Photo1").Preload("Photo2").Preload("PRole").Preload("Role").First(&user)
 	if result.RowsAffected == 0 {
 		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest, ResponseMsg: "Хэрэглэгч олдсонгүй"})
 	}
@@ -61,7 +61,7 @@ func GetUserList(c *fiber.Ctx) error {
 
 	conn = initializers.DB.
 		Model(&user.User{}).Preload("Photo").Preload("Photo1").Preload("Photo2").Preload("PRole").Preload("Role").
-		Scopes(utils.Filter(request.Filter))
+		Scopes(utils.Filter(request.Filter, request.GlobOperation))
 
 	pagination := utils.Pagination{CurrentPageNo: request.PageNo, PerPage: request.PerPage, Sort: request.Sort}
 	conn.Debug().

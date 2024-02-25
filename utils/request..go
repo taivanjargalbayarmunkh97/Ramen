@@ -9,11 +9,12 @@ type FilterObj struct {
 }
 
 type RequestObj struct {
-	PageNo       int            `json:"page_no"`
-	PerPage      int            `json:"per_page"`
-	Sort         string         `json:"sort"`
-	Filter       []FilterObj    `json:"filter"`
-	DefaultParam []DefaultParam `json:"default_param"`
+	PageNo        int            `json:"page_no"`
+	PerPage       int            `json:"per_page"`
+	Sort          string         `json:"sort"`
+	Filter        []FilterObj    `json:"filter"`
+	DefaultParam  []DefaultParam `json:"default_param"`
+	GlobOperation string         `json:"glob_operation"`
 }
 
 type DefaultParam struct {

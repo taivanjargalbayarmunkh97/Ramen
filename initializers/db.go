@@ -1,7 +1,6 @@
 package initializers
 
 import (
-	"example.com/ramen/models/file"
 	"fmt"
 	"log"
 	"os"
@@ -35,14 +34,15 @@ func ConnectDB(config *Config) {
 
 	log.Println("Running Migrations")
 	err = DB.AutoMigrate(
-		//&user.User{},
-		//&Agency.Agency{},
-		//&Company.Company{},
-		//&role.Role{},
-		&file.File{},
-		//&reference.Reference{},
-		//&_map.Map{},
-		//&_map.RoleMap{},
+	//&user.User{},
+	//&Agency.Agency{},
+	//&Company.Company{},
+	//&role.Role{},
+	//&file.File{},
+	//&reference.Reference{},
+	//&_map.Map{},
+	//&_map.RoleMap{},
+	//&_map.AgencyMap{},
 	)
 	if err != nil {
 		log.Fatal("Migration Failed:  \n", err.Error())
