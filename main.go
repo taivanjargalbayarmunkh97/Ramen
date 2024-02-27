@@ -99,7 +99,7 @@ func apiRoutes() *fiber.App {
 
 	// Агент
 	app.Route("/agent", func(router fiber.Router) {
-		router.Post("/list", middleware.DeserializeUser, agency.GetAgentList)
+		router.Post("/list", agency.GetAgentList)
 		router.Get("/:id", middleware.DeserializeUser, agency.GetAgent)
 		router.Post("/create", middleware.DeserializeUser, agency.CreateAgency)
 		router.Put("/:id", middleware.DeserializeUser, agency.UpdateAgent)
@@ -108,7 +108,7 @@ func apiRoutes() *fiber.App {
 
 	// Компани
 	app.Route("/company", func(router fiber.Router) {
-		router.Post("/list", middleware.DeserializeUser, company.ListCompany)
+		router.Post("/list", company.ListCompany)
 		router.Get("/:id", middleware.DeserializeUser, company.GetCompany)
 		router.Post("/", middleware.DeserializeUser, company.CreateCompany)
 		router.Put("/", middleware.DeserializeUser, company.UpdateCompany)
