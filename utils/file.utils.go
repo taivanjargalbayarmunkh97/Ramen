@@ -71,3 +71,7 @@ func FileUpload(base64Image string, ParentId uuid.UUID, Category string, tx *gor
 	}
 	return nil
 }
+
+type Base64Struct struct {
+	Base64 string `json:"base64"`
+}

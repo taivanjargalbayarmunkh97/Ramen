@@ -1,6 +1,8 @@
 package company
 
 import (
+	_map "example.com/ramen/models/map"
+	reference2 "example.com/ramen/models/reference"
 	"net/http"
 
 	"example.com/ramen/initializers"
@@ -32,7 +34,7 @@ func ListCompany(c *fiber.Ctx) error {
 	}
 
 	conn = initializers.DB.
-		Model(&Company.Company{}).Preload("Image").
+		Model(&Company.Company{}).Preload("Image").Preload("AreasOfActivity").
 		Scopes(utils.Filter(request.Filter, request.GlobOperation))
 
 	pagination := utils.Pagination{CurrentPageNo: request.PageNo, PerPage: request.PerPage, Sort: request.Sort}
@@ -65,7 +67,7 @@ func GetCompany(ctx *fiber.Ctx) error {
 			ResponseMsg: "Id оруулна уу"})
 	}
 
-	result := initializers.DB.Where("id = ?", id).Preload("Image").First(&company)
+	result := initializers.DB.Where("id = ?", id).Preload("Image").Preload("AreasOfActivity").First(&company)
 	if result.RowsAffected == 0 {
 		return ctx.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: "Олдсонгүй"})
@@ -102,21 +104,48 @@ func CreateCompany(c *fiber.Ctx) error {
 	company.Phone = payload.Phone
 	company.Address = payload.Address
 	company.City = payload.City
-	company.AreasOfActivity = payload.AreasOfActivity
 
 	if err := tx.Create(&company).Error; err != nil {
 		tx.Rollback()
 		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: err.Error()})
 	}
-	if payload.Image != "" {
-		err := utils.FileUpload(payload.Image, company.ID, "company", tx)
+	if payload.Image.Base64 != "" {
+		err := utils.FileUpload(payload.Image.Base64, company.ID, "Company", tx)
 		if err != nil {
 			tx.Rollback()
 			return c.Status(http.StatusOK).JSON(utils.ResponseObj{ResponseCode: http.StatusBadRequest,
 				ResponseMsg: err.Error()})
 		}
 	}
+
+	if len(payload.AreasOfActivity) > 0 {
+		var reference []reference2.Reference
+		result := tx.Where("id in ?", payload.AreasOfActivity).Find(&reference)
+		if result.RowsAffected == 0 {
+			tx.Rollback()
+			return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+				ResponseMsg: "Үйл ажиллагааны төрөл олдсонгүй"})
+		}
+		if len(reference) > 0 {
+			var mapC []_map.Map
+
+			for _, ref := range reference {
+				mapC = append(mapC, _map.Map{CompanyActivityEntityId: company.ID.String(),
+					Name: ref.Name, ReferenceId: ref.ID,
+					EntityName: "company"})
+
+			}
+			if err := tx.Create(&mapC).Error; err != nil {
+				tx.Rollback()
+				return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+					ResponseMsg: err.Error()})
+			}
+
+		}
+
+	}
+
 	tx.Commit()
 
 	return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusOK,
@@ -156,7 +185,6 @@ func UpdateCompany(c *fiber.Ctx) error {
 	company.Phone = payload.Phone
 	company.Address = payload.Address
 	company.City = payload.City
-	company.AreasOfActivity = payload.AreasOfActivity
 
 	if err := tx.Save(&company).Error; err != nil {
 		tx.Rollback()
@@ -164,16 +192,41 @@ func UpdateCompany(c *fiber.Ctx) error {
 			ResponseMsg: err.Error()})
 	}
 
-	if payload.Image != "" {
+	if payload.Image.Base64 != "" {
 		var file []file.File
-		tx.Where("parent_id = ?", company.ID).Delete(&file)
-		err := utils.FileUpload(payload.Image, company.ID, "company", tx)
+		tx.Where("company_parent_id = ?", company.ID).Delete(&file)
+		err := utils.FileUpload(payload.Image.Base64, company.ID, "Company", tx)
 		if err != nil {
 			tx.Rollback()
 			return c.Status(http.StatusOK).JSON(utils.ResponseObj{ResponseCode: http.StatusBadRequest,
 				ResponseMsg: err.Error()})
 		}
 	}
+
+	if len(payload.AreasOfActivity) > 0 {
+		var reference []reference2.Reference
+		result := tx.Where("id in ?", payload.AreasOfActivity).Find(&reference)
+		if result.RowsAffected == 0 {
+			tx.Rollback()
+			return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+				ResponseMsg: "Үйл ажиллагааны төрөл олдсонгүй"})
+		}
+		if len(reference) > 0 {
+			var mapC []_map.Map
+			tx.Where("company_activity_entity_id = ?", company.ID).Delete(&_map.Map{})
+			for _, ref := range reference {
+				mapC = append(mapC, _map.Map{CompanyActivityEntityId: company.ID.String(),
+					Name: ref.Name, ReferenceId: ref.ID,
+					EntityName: "company"})
+			}
+			if err := tx.Create(&mapC).Error; err != nil {
+				tx.Rollback()
+				return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+					ResponseMsg: err.Error()})
+			}
+		}
+	}
+
 	tx.Commit()
 
 	return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusOK,

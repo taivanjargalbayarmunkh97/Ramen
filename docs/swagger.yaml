@@ -52,7 +52,9 @@ definitions:
       address:
         type: string
       areas_of_activity:
-        type: string
+        items:
+          type: string
+        type: array
       city:
         type: string
       description:
@@ -60,7 +62,7 @@ definitions:
       email:
         type: string
       image:
-        type: string
+        $ref: '#/definitions/utils.Base64Struct'
       name:
         type: string
       phone:
@@ -68,22 +70,18 @@ definitions:
       website:
         type: string
     required:
-    - address
-    - areas_of_activity
-    - city
-    - description
     - email
     - image
     - name
-    - phone
-    - website
     type: object
   Company.UpdateCompany:
     properties:
       address:
         type: string
       areas_of_activity:
-        type: string
+        items:
+          type: string
+        type: array
       city:
         type: string
       description:
@@ -93,7 +91,7 @@ definitions:
       id:
         type: string
       image:
-        type: string
+        $ref: '#/definitions/utils.Base64Struct'
       name:
         type: string
       phone:
@@ -170,11 +168,6 @@ definitions:
     required:
     - name
     type: object
-  user.Base64Struct:
-    properties:
-      base64:
-        type: string
-    type: object
   user.SignInInput:
     properties:
       email:
@@ -204,7 +197,7 @@ definitions:
       phone_number:
         type: string
       photo:
-        $ref: '#/definitions/user.Base64Struct'
+        $ref: '#/definitions/utils.Base64Struct'
       prole_id:
         type: string
       role_id:
@@ -253,7 +246,7 @@ definitions:
       phone_number:
         type: string
       photo:
-        $ref: '#/definitions/user.Base64Struct'
+        $ref: '#/definitions/utils.Base64Struct'
       popular_posts:
         type: string
       role_id:
@@ -280,7 +273,7 @@ definitions:
         minLength: 8
         type: string
       photo:
-        $ref: '#/definitions/user.Base64Struct'
+        $ref: '#/definitions/utils.Base64Struct'
     required:
     - email
     - name
@@ -327,7 +320,7 @@ definitions:
       phone_number:
         type: string
       photo:
-        $ref: '#/definitions/user.Base64Struct'
+        $ref: '#/definitions/utils.Base64Struct'
       popular_posts:
         type: string
       provider:
@@ -336,6 +329,11 @@ definitions:
         type: string
       total_posts:
         type: number
+    type: object
+  utils.Base64Struct:
+    properties:
+      base64:
+        type: string
     type: object
   utils.DefaultParam:
     properties:

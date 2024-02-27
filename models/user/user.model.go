@@ -3,6 +3,7 @@ package user
 import (
 	"example.com/ramen/models/file"
 	_map "example.com/ramen/models/map"
+	"example.com/ramen/utils"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"time"
@@ -73,29 +74,29 @@ type UserSimple struct {
 }
 
 type UserUpdate struct {
-	Name               string        `json:"name"`
-	Email              string        `json:"email"`
-	PhoneNumber        string        `json:"phone_number"`
-	Role               *string       `json:"role"`
-	Provider           *string       `json:"provider"`
-	Photo              *Base64Struct `json:"photo"`
-	Followers          *float64      `json:"followers"`
-	Location           *string       `json:"location"`
-	EngagementRate     *float64      `json:"engagement_rate"`
-	AverageLikes       *float64      `json:"average_likes"`
-	Bio                *string       `json:"bio"`
-	TotalPosts         *float64      `json:"total_posts"`
-	AvgLikes           *float64      `json:"avg_likes"`
-	AvgComments        *float64      `json:"avg_comments"`
-	AvgViews           *float64      `json:"avg_views"`
-	AvgReelPlays       *float64      `json:"avg_reel_plays"`
-	GenderSplit        *string       `json:"gender_split"`
-	AudienceInterests  *string       `json:"audience_interests"`
-	PopularPosts       *string       `json:"popular_posts"`
-	InfluencerIgName   *string       `json:"influencer_ig_name"`
-	CompanyAccount     *string       `json:"company_account"`
-	ManagerPhoneNumber *string       `json:"manager_phone_number"`
-	Password           string        `json:"password" default:"null"`
+	Name               string              `json:"name"`
+	Email              string              `json:"email"`
+	PhoneNumber        string              `json:"phone_number"`
+	Role               *string             `json:"role"`
+	Provider           *string             `json:"provider"`
+	Photo              *utils.Base64Struct `json:"photo"`
+	Followers          *float64            `json:"followers"`
+	Location           *string             `json:"location"`
+	EngagementRate     *float64            `json:"engagement_rate"`
+	AverageLikes       *float64            `json:"average_likes"`
+	Bio                *string             `json:"bio"`
+	TotalPosts         *float64            `json:"total_posts"`
+	AvgLikes           *float64            `json:"avg_likes"`
+	AvgComments        *float64            `json:"avg_comments"`
+	AvgViews           *float64            `json:"avg_views"`
+	AvgReelPlays       *float64            `json:"avg_reel_plays"`
+	GenderSplit        *string             `json:"gender_split"`
+	AudienceInterests  *string             `json:"audience_interests"`
+	PopularPosts       *string             `json:"popular_posts"`
+	InfluencerIgName   *string             `json:"influencer_ig_name"`
+	CompanyAccount     *string             `json:"company_account"`
+	ManagerPhoneNumber *string             `json:"manager_phone_number"`
+	Password           string              `json:"password" default:"null"`
 }
 
 func (u User) FilterUserRecord(user *User) UserResponse {
@@ -111,53 +112,49 @@ func (u User) FilterUserRecord(user *User) UserResponse {
 }
 
 type SignUpInput struct {
-	Name            string       `json:"name" validate:"required"`
-	Email           string       `json:"email" validate:"required"`
-	Password        string       `json:"password" validate:"required,min=8"`
-	PasswordConfirm string       `json:"passwordConfirm" validate:"required,min=8"`
-	Photo           Base64Struct `json:"photo"`
-}
-
-type Base64Struct struct {
-	Base64 string `json:"base64"`
+	Name            string             `json:"name" validate:"required"`
+	Email           string             `json:"email" validate:"required"`
+	Password        string             `json:"password" validate:"required,min=8"`
+	PasswordConfirm string             `json:"passwordConfirm" validate:"required,min=8"`
+	Photo           utils.Base64Struct `json:"photo"`
 }
 
 type SignUpInfluencer struct {
-	Name            string       `json:"name" validate:"required"`
-	IgName          *string      `json:"ig_name" validate:"required"`
-	Email           string       `json:"email" validate:"required"`
-	Password        string       `json:"password" validate:"required"`
-	PasswordConfirm string       `json:"passwordConfirm" validate:"required"`
-	Photo           Base64Struct `json:"photo"`
-	Followers       *float64     `json:"followers"`
-	Location        *string      `json:"location"`
-	EngagementRate  *float64     `json:"engagement_rate"`
-	AverageLikes    *float64     `json:"average_likes"`
-	Bio             *string      `json:"bio"`
-	TotalPosts      *float64     `json:"total_posts"`
-	AvgLikes        *float64     `json:"avg_likes"`
-	AvgComments     *float64     `json:"avg_comments"`
-	AvgViews        *float64     `json:"avg_views"`
-	AvgReelPlays    *float64     `json:"avg_reel_plays"`
-	GenderSplit     *string      `json:"gender_split"`
-	AudienceInteres *string      `json:"audience_interests"`
-	PopularPosts    *string      `json:"popular_posts"`
-	RoleId          *string      `json:"role_id"`
-	PhoneNumber     string       `json:"phone_number"`
+	Name            string             `json:"name" validate:"required"`
+	IgName          *string            `json:"ig_name" validate:"required"`
+	Email           string             `json:"email" validate:"required"`
+	Password        string             `json:"password" validate:"required"`
+	PasswordConfirm string             `json:"passwordConfirm" validate:"required"`
+	Photo           utils.Base64Struct `json:"photo"`
+	Followers       *float64           `json:"followers"`
+	Location        *string            `json:"location"`
+	EngagementRate  *float64           `json:"engagement_rate"`
+	AverageLikes    *float64           `json:"average_likes"`
+	Bio             *string            `json:"bio"`
+	TotalPosts      *float64           `json:"total_posts"`
+	AvgLikes        *float64           `json:"avg_likes"`
+	AvgComments     *float64           `json:"avg_comments"`
+	AvgViews        *float64           `json:"avg_views"`
+	AvgReelPlays    *float64           `json:"avg_reel_plays"`
+	GenderSplit     *string            `json:"gender_split"`
+	AudienceInteres *string            `json:"audience_interests"`
+	PopularPosts    *string            `json:"popular_posts"`
+	RoleId          *string            `json:"role_id"`
+	PhoneNumber     string             `json:"phone_number"`
 }
 
 type SignUpCompany struct {
-	Name               string       `json:"name" validate:"required"`
-	Email              string       `json:"email" validate:"required"`
-	PhoneNumber        string       `json:"phone_number" validate:"required"`
-	Password           string       `json:"password" validate:"required"`
-	PasswordConfirm    string       `json:"passwordConfirm" validate:"required"`
-	Photo              Base64Struct `json:"photo"`
-	RoleId             *string      `json:"role_id"`
-	Location           *string      `json:"location"`
-	CompanyAccount     *string      `json:"company_account"`
-	ManagerPhoneNumber *string      `json:"manager_phone_number"`
-	ProleId            string       `json:"prole_id"`
+	Name               string             `json:"name" validate:"required"`
+	Email              string             `json:"email" validate:"required"`
+	PhoneNumber        string             `json:"phone_number" validate:"required"`
+	Password           string             `json:"password" validate:"required"`
+	PasswordConfirm    string             `json:"passwordConfirm" validate:"required"`
+	Photo              utils.Base64Struct `json:"photo"`
+	RoleId             *string            `json:"role_id"`
+	Location           *string            `json:"location"`
+	CompanyAccount     *string            `json:"company_account"`
+	ManagerPhoneNumber *string            `json:"manager_phone_number"`
+	ProleId            string             `json:"prole_id"`
 }
 
 type SignInInput struct {

@@ -1306,22 +1306,19 @@ const docTemplate = `{
         "Company.CreateCompany": {
             "type": "object",
             "required": [
-                "address",
-                "areas_of_activity",
-                "city",
-                "description",
                 "email",
                 "image",
-                "name",
-                "phone",
-                "website"
+                "name"
             ],
             "properties": {
                 "address": {
                     "type": "string"
                 },
                 "areas_of_activity": {
-                    "type": "string"
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "city": {
                     "type": "string"
@@ -1333,7 +1330,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "image": {
-                    "type": "string"
+                    "$ref": "#/definitions/utils.Base64Struct"
                 },
                 "name": {
                     "type": "string"
@@ -1353,7 +1350,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "areas_of_activity": {
-                    "type": "string"
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "city": {
                     "type": "string"
@@ -1368,7 +1368,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "image": {
-                    "type": "string"
+                    "$ref": "#/definitions/utils.Base64Struct"
                 },
                 "name": {
                     "type": "string"
@@ -1484,14 +1484,6 @@ const docTemplate = `{
                 }
             }
         },
-        "user.Base64Struct": {
-            "type": "object",
-            "properties": {
-                "base64": {
-                    "type": "string"
-                }
-            }
-        },
         "user.SignInInput": {
             "type": "object",
             "required": [
@@ -1542,7 +1534,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "photo": {
-                    "$ref": "#/definitions/user.Base64Struct"
+                    "$ref": "#/definitions/utils.Base64Struct"
                 },
                 "prole_id": {
                     "type": "string"
@@ -1614,7 +1606,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "photo": {
-                    "$ref": "#/definitions/user.Base64Struct"
+                    "$ref": "#/definitions/utils.Base64Struct"
                 },
                 "popular_posts": {
                     "type": "string"
@@ -1651,7 +1643,7 @@ const docTemplate = `{
                     "minLength": 8
                 },
                 "photo": {
-                    "$ref": "#/definitions/user.Base64Struct"
+                    "$ref": "#/definitions/utils.Base64Struct"
                 }
             }
         },
@@ -1714,7 +1706,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "photo": {
-                    "$ref": "#/definitions/user.Base64Struct"
+                    "$ref": "#/definitions/utils.Base64Struct"
                 },
                 "popular_posts": {
                     "type": "string"
@@ -1727,6 +1719,14 @@ const docTemplate = `{
                 },
                 "total_posts": {
                     "type": "number"
+                }
+            }
+        },
+        "utils.Base64Struct": {
+            "type": "object",
+            "properties": {
+                "base64": {
+                    "type": "string"
                 }
             }
         },
