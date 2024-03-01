@@ -43,6 +43,7 @@ func ConnectDB(config *Config) {
 	//&_map.Map{},
 	//&_map.RoleMap{},
 	//&_map.AgencyMap{},
+	//channel.Channel{},
 	)
 	if err != nil {
 		log.Fatal("Migration Failed:  \n", err.Error())

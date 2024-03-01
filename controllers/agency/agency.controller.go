@@ -5,7 +5,6 @@ import (
 	"example.com/ramen/models/Agency"
 	_map "example.com/ramen/models/map"
 	reference2 "example.com/ramen/models/reference"
-	"example.com/ramen/models/user"
 	"example.com/ramen/utils"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
@@ -32,7 +31,7 @@ func CreateAgency(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest, ResponseMsg: err.Error()})
 	}
 
-	errors := user.ValidateStruct(payload)
+	errors := utils.ValidateStruct(payload)
 	if errors != nil {
 		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: "Утга зөв эсэхийг шалгана уу", Data: errors})
@@ -200,7 +199,7 @@ func UpdateAgent(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest, ResponseMsg: err.Error()})
 	}
 
-	errors := user.ValidateStruct(payload)
+	errors := utils.ValidateStruct(payload)
 	if errors != nil {
 		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: "Утга зөв эсэхийг шалгана уу", Data: errors})

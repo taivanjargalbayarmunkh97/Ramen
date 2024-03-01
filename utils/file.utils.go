@@ -58,6 +58,13 @@ func FileUpload(base64Image string, ParentId uuid.UUID, Category string, tx *gor
 		file.FileName = fileName
 		file.Size = size
 		file.FilePath = fmt.Sprintf("/uploads/%s", fileName)
+	} else if Category == "Channel" {
+		file.ChannelParentId = ParentId.String()
+		file.Category = Category
+		file.FileName = fileName
+		file.Size = size
+		file.FilePath = fmt.Sprintf("/uploads/%s", fileName)
+
 	} else {
 		file.InfluencerParentId = ParentId.String()
 		file.Category = Category

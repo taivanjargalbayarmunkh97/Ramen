@@ -36,7 +36,7 @@ func SignUpAdmin(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest, ResponseMsg: err.Error()})
 	}
 
-	errors := user.ValidateStruct(payload)
+	errors := utils.ValidateStruct(payload)
 	if errors != nil {
 		tx.Rollback()
 		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
@@ -131,7 +131,7 @@ func SignUpInfluencer(c *fiber.Ctx) error {
 		})
 	}
 
-	errors := user.ValidateStruct(payload)
+	errors := utils.ValidateStruct(payload)
 	if errors != nil {
 		tx.Rollback()
 		return c.Status(fiber.StatusOK).JSON(
@@ -256,7 +256,7 @@ func SignUpCompany(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest, ResponseMsg: err.Error()})
 	}
 
-	errors := user.ValidateStruct(payload)
+	errors := utils.ValidateStruct(payload)
 	if errors != nil {
 		tx.Rollback()
 		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
@@ -381,7 +381,7 @@ func SignInUser(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "fail", "message": err.Error()})
 	}
 
-	errors := user.ValidateStruct(payload)
+	errors := utils.ValidateStruct(payload)
 	if errors != nil {
 		return c.Status(fiber.StatusOK).JSON(errors)
 

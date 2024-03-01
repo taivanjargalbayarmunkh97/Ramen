@@ -1,6 +1,7 @@
 package main
 
 import (
+	"example.com/ramen/controllers/channel"
 	"fmt"
 	"log"
 	"os"
@@ -113,6 +114,16 @@ func apiRoutes() *fiber.App {
 		router.Post("/", middleware.DeserializeUser, company.CreateCompany)
 		router.Put("/", middleware.DeserializeUser, company.UpdateCompany)
 		router.Delete("/:id", middleware.DeserializeUser, company.DeleteCompany)
+	})
+
+	// Channel
+	app.Route("/channel", func(router fiber.Router) {
+		router.Post("/list", middleware.DeserializeUser, channel.ListChannel)
+		router.Get("/:id", middleware.DeserializeUser, channel.GetChannel)
+		router.Post("/", middleware.DeserializeUser, channel.CreateChannel)
+		router.Put("/:id", middleware.DeserializeUser, channel.UpdateChannel)
+		router.Delete("/:id", middleware.DeserializeUser, channel.DeleteChannel)
+
 	})
 
 	// Reference

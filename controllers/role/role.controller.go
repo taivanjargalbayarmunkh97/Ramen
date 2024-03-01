@@ -3,7 +3,6 @@ package role
 import (
 	"example.com/ramen/initializers"
 	"example.com/ramen/models/role"
-	"example.com/ramen/models/user"
 	"example.com/ramen/utils"
 	"github.com/gofiber/fiber/v2"
 )
@@ -27,7 +26,7 @@ func CreateRole(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest, ResponseMsg: err.Error()})
 	}
 
-	errors := user.ValidateStruct(payload)
+	errors := utils.ValidateStruct(payload)
 	if errors != nil {
 		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: "Утга зөв эсэхийг шалгана уу", Data: errors})
@@ -102,7 +101,7 @@ func UpdateRole(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest, ResponseMsg: err.Error()})
 	}
 
-	errors := user.ValidateStruct(payload)
+	errors := utils.ValidateStruct(payload)
 	if errors != nil {
 		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: "Утга зөв эсэхийг шалгана уу", Data: errors})

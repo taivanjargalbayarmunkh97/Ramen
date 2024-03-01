@@ -99,6 +99,84 @@ definitions:
       website:
         type: string
     type: object
+  channel.CreateChannel:
+    properties:
+      address:
+        type: string
+      description:
+        type: string
+      email:
+        type: string
+      fm_cpe_1:
+        type: string
+      fm_cpe_2:
+        type: string
+      fm_daily_avg_1:
+        type: string
+      fm_daily_avg_2:
+        type: string
+      fm_second_eval_1:
+        type: string
+      fm_second_eval_2:
+        type: string
+      image:
+        $ref: '#/definitions/utils.Base64Struct'
+      name:
+        type: string
+      phone:
+        type: string
+      tv_daily_avg_views:
+        type: string
+      tv_univision_number:
+        type: string
+      type:
+        type: string
+      website:
+        type: string
+    required:
+    - image
+    - name
+    - type
+    type: object
+  channel.UpdateChannel:
+    properties:
+      address:
+        type: string
+      description:
+        type: string
+      email:
+        type: string
+      fm_cpe_1:
+        type: string
+      fm_cpe_2:
+        type: string
+      fm_daily_avg_1:
+        type: string
+      fm_daily_avg_2:
+        type: string
+      fm_second_eval_1:
+        type: string
+      fm_second_eval_2:
+        type: string
+      image:
+        $ref: '#/definitions/utils.Base64Struct'
+      name:
+        type: string
+      phone:
+        type: string
+      tv_daily_avg_views:
+        type: string
+      tv_univision_number:
+        type: string
+      type:
+        type: string
+      website:
+        type: string
+    required:
+    - image
+    - name
+    - type
+    type: object
   reference.CreateReference:
     properties:
       code:
@@ -650,6 +728,147 @@ paths:
       summary: Sign up influencer
       tags:
       - Auth
+  /channel:
+    post:
+      consumes:
+      - application/json
+      description: Create channel
+      parameters:
+      - description: CreateChannel
+        in: body
+        name: channel
+        required: true
+        schema:
+          $ref: '#/definitions/channel.CreateChannel'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+      security:
+      - ApiKeyAuth: []
+      summary: Create channel
+      tags:
+      - Channel
+  /channel/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete channel
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete channel
+      tags:
+      - Channel
+    get:
+      consumes:
+      - application/json
+      description: Get channel
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+      security:
+      - ApiKeyAuth: []
+      summary: Get channel
+      tags:
+      - Channel
+    put:
+      consumes:
+      - application/json
+      description: Update channel
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: UpdateChannel
+        in: body
+        name: channel
+        required: true
+        schema:
+          $ref: '#/definitions/channel.UpdateChannel'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+      security:
+      - ApiKeyAuth: []
+      summary: Update channel
+      tags:
+      - Channel
+  /channel/list:
+    post:
+      consumes:
+      - application/json
+      description: Get channel list
+      parameters:
+      - description: RequestObj
+        in: body
+        name: channel
+        required: true
+        schema:
+          $ref: '#/definitions/utils.RequestObj'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+      security:
+      - ApiKeyAuth: []
+      summary: Get channel list
+      tags:
+      - Channel
   /company:
     post:
       consumes:

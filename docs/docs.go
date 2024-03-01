@@ -399,6 +399,230 @@ const docTemplate = `{
                 }
             }
         },
+        "/channel": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Create channel",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Channel"
+                ],
+                "summary": "Create channel",
+                "parameters": [
+                    {
+                        "description": "CreateChannel",
+                        "name": "channel",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/channel.CreateChannel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ResponseObj"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ResponseObj"
+                        }
+                    }
+                }
+            }
+        },
+        "/channel/list": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get channel list",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Channel"
+                ],
+                "summary": "Get channel list",
+                "parameters": [
+                    {
+                        "description": "RequestObj",
+                        "name": "channel",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestObj"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ResponseObj"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ResponseObj"
+                        }
+                    }
+                }
+            }
+        },
+        "/channel/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get channel",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Channel"
+                ],
+                "summary": "Get channel",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ResponseObj"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ResponseObj"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Update channel",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Channel"
+                ],
+                "summary": "Update channel",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "UpdateChannel",
+                        "name": "channel",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/channel.UpdateChannel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ResponseObj"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ResponseObj"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Delete channel",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Channel"
+                ],
+                "summary": "Delete channel",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ResponseObj"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ResponseObj"
+                        }
+                    }
+                }
+            }
+        },
         "/company": {
             "put": {
                 "security": [
@@ -1374,6 +1598,122 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "phone": {
+                    "type": "string"
+                },
+                "website": {
+                    "type": "string"
+                }
+            }
+        },
+        "channel.CreateChannel": {
+            "type": "object",
+            "required": [
+                "image",
+                "name",
+                "type"
+            ],
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "fm_cpe_1": {
+                    "type": "string"
+                },
+                "fm_cpe_2": {
+                    "type": "string"
+                },
+                "fm_daily_avg_1": {
+                    "type": "string"
+                },
+                "fm_daily_avg_2": {
+                    "type": "string"
+                },
+                "fm_second_eval_1": {
+                    "type": "string"
+                },
+                "fm_second_eval_2": {
+                    "type": "string"
+                },
+                "image": {
+                    "$ref": "#/definitions/utils.Base64Struct"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "tv_daily_avg_views": {
+                    "type": "string"
+                },
+                "tv_univision_number": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "website": {
+                    "type": "string"
+                }
+            }
+        },
+        "channel.UpdateChannel": {
+            "type": "object",
+            "required": [
+                "image",
+                "name",
+                "type"
+            ],
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "fm_cpe_1": {
+                    "type": "string"
+                },
+                "fm_cpe_2": {
+                    "type": "string"
+                },
+                "fm_daily_avg_1": {
+                    "type": "string"
+                },
+                "fm_daily_avg_2": {
+                    "type": "string"
+                },
+                "fm_second_eval_1": {
+                    "type": "string"
+                },
+                "fm_second_eval_2": {
+                    "type": "string"
+                },
+                "image": {
+                    "$ref": "#/definitions/utils.Base64Struct"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "tv_daily_avg_views": {
+                    "type": "string"
+                },
+                "tv_univision_number": {
+                    "type": "string"
+                },
+                "type": {
                     "type": "string"
                 },
                 "website": {
