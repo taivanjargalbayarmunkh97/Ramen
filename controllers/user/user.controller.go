@@ -5,7 +5,6 @@ import (
 	user "example.com/ramen/models/user"
 	"example.com/ramen/utils"
 	"github.com/gofiber/fiber/v2"
-	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
 )
@@ -149,17 +148,12 @@ func UpdateUser(c *fiber.Ctx) error {
 	}
 
 	if base64String != "" {
-		u, err := uuid.Parse(id)
-		if err != nil {
-			tx.Rollback()
-			return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
-				ResponseMsg: err.Error()})
-		}
-		err1 := utils.FileUpload(base64String, u, "", tx)
+
+		err1 := utils.FileUpload(base64String, id, "", tx)
 		if err1 != nil {
 			tx.Rollback()
 			return c.Status(http.StatusOK).JSON(utils.ResponseObj{ResponseCode: http.StatusBadRequest,
-				ResponseMsg: err.Error()})
+				ResponseMsg: err1.Error()})
 		}
 
 	}

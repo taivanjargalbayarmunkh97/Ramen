@@ -111,7 +111,7 @@ func CreateCompany(c *fiber.Ctx) error {
 			ResponseMsg: err.Error()})
 	}
 	if payload.Image.Base64 != "" {
-		err := utils.FileUpload(payload.Image.Base64, company.ID, "Company", tx)
+		err := utils.FileUpload(payload.Image.Base64, company.ID.String(), "Company", tx)
 		if err != nil {
 			tx.Rollback()
 			return c.Status(http.StatusOK).JSON(utils.ResponseObj{ResponseCode: http.StatusBadRequest,
@@ -195,7 +195,7 @@ func UpdateCompany(c *fiber.Ctx) error {
 	if payload.Image.Base64 != "" {
 		var file []file.File
 		tx.Where("company_parent_id = ?", company.ID).Delete(&file)
-		err := utils.FileUpload(payload.Image.Base64, company.ID, "Company", tx)
+		err := utils.FileUpload(payload.Image.Base64, company.ID.String(), "Company", tx)
 		if err != nil {
 			tx.Rollback()
 			return c.Status(http.StatusOK).JSON(utils.ResponseObj{ResponseCode: http.StatusBadRequest,

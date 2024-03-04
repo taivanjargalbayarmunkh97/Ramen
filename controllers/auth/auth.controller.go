@@ -96,7 +96,7 @@ func SignUpAdmin(c *fiber.Ctx) error {
 	}
 
 	if payload.Photo.Base64 != "" {
-		err := utils.FileUpload(payload.Photo.Base64, newUser.ID, "Influencer", tx)
+		err := utils.FileUpload(payload.Photo.Base64, newUser.ID.String(), "Influencer", tx)
 		if err != nil {
 			tx.Rollback()
 			return c.Status(http.StatusOK).JSON(utils.ResponseObj{ResponseCode: http.StatusBadRequest,
@@ -225,7 +225,7 @@ func SignUpInfluencer(c *fiber.Ctx) error {
 	}
 
 	if payload.Photo.Base64 != "" {
-		err := utils.FileUpload(payload.Photo.Base64, newUser.ID, "Influencer", tx)
+		err := utils.FileUpload(payload.Photo.Base64, newUser.ID.String(), "Influencer", tx)
 		if err != nil {
 			tx.Rollback()
 			return c.Status(http.StatusOK).JSON(utils.ResponseObj{ResponseCode: http.StatusBadRequest,
@@ -350,7 +350,7 @@ func SignUpCompany(c *fiber.Ctx) error {
 	}
 
 	if payload.Photo.Base64 != "" {
-		err := utils.FileUpload(payload.Photo.Base64, newUser.ID, "Company", tx)
+		err := utils.FileUpload(payload.Photo.Base64, newUser.ID.String(), "Company", tx)
 		if err != nil {
 			tx.Rollback()
 			return c.Status(http.StatusOK).JSON(utils.ResponseObj{ResponseCode: http.StatusBadRequest,

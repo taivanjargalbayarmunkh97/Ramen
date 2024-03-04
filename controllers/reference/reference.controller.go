@@ -5,6 +5,7 @@ import (
 	"example.com/ramen/models/reference"
 	"example.com/ramen/utils"
 	"github.com/gofiber/fiber/v2"
+	"strconv"
 )
 
 // CreateReference godoc
@@ -39,11 +40,25 @@ func CreateReference(c *fiber.Ctx) error {
 	reference.Field2 = payload.Field2
 	reference.Field3 = payload.Field3
 	reference.Code = payload.Code
-	result := initializers.DB.Create(&reference)
+	tx := initializers.DB.Begin()
+	result := tx.Create(&reference)
 	if result.Error != nil {
+		tx.Rollback()
 		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: "Алдаа гарлаа", Data: result.Error.Error()})
 	}
+
+	if payload.Image.Base64 != "" {
+		err := utils.FileUpload(payload.Image.Base64, strconv.Itoa(int(reference.ID)), "Reference", tx)
+		if err != nil {
+			tx.Rollback()
+			return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+				ResponseMsg: err.Error()})
+		}
+
+	}
+
+	tx.Commit()
 
 	return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusOK,
 		ResponseMsg: "Амжилттай бүртгэлээ", Data: reference})

@@ -189,6 +189,8 @@ definitions:
         type: string
       field3:
         type: string
+      image:
+        $ref: '#/definitions/utils.Base64Struct'
       name:
         type: string
     required:
@@ -212,6 +214,63 @@ definitions:
     required:
     - code
     - name
+    type: object
+  resources.CreateResources:
+    properties:
+      body:
+        type: string
+      description:
+        type: string
+      facebook_link:
+        type: string
+      image:
+        $ref: '#/definitions/utils.Base64Struct'
+      instagram_link:
+        type: string
+      linkedin_link:
+        type: string
+      name:
+        maxLength: 200
+        type: string
+      pinterest_link:
+        type: string
+      twitter_link:
+        type: string
+      type:
+        items:
+          type: string
+        type: array
+      youtube_link:
+        type: string
+    required:
+    - name
+    type: object
+  resources.UpdateResources:
+    properties:
+      body:
+        type: string
+      description:
+        type: string
+      facebook_link:
+        type: string
+      image:
+        $ref: '#/definitions/utils.Base64Struct'
+      instagram_link:
+        type: string
+      linkedin_link:
+        type: string
+      name:
+        type: string
+      pinterest_link:
+        type: string
+      twitter_link:
+        type: string
+      type:
+        items:
+          type: string
+        type: array
+      youtube_link:
+        type: string
     type: object
   role.RoleCreateInput:
     properties:
@@ -1171,6 +1230,117 @@ paths:
       summary: Get reference list
       tags:
       - Reference
+  /resources:
+    post:
+      consumes:
+      - application/json
+      description: Create resources
+      parameters:
+      - description: CreateReference
+        in: body
+        name: resources
+        required: true
+        schema:
+          $ref: '#/definitions/resources.CreateResources'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+      summary: Create resources
+      tags:
+      - Resources
+  /resources/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete resources
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+      summary: Delete resources
+      tags:
+      - Resources
+    get:
+      consumes:
+      - application/json
+      description: Get resources
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+      summary: Get resources
+      tags:
+      - Resources
+    put:
+      consumes:
+      - application/json
+      description: Update resources
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: UpdateReference
+        in: body
+        name: resources
+        required: true
+        schema:
+          $ref: '#/definitions/resources.UpdateResources'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+      summary: Update resources
+      tags:
+      - Resources
+  /resources/list:
+    post:
+      consumes:
+      - application/json
+      description: List resources
+      parameters:
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/utils.RequestObj'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+      summary: List resources
+      tags:
+      - Resources
   /role/{id}:
     delete:
       consumes:

@@ -14,7 +14,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func FileUpload(base64Image string, ParentId uuid.UUID, Category string, tx *gorm.DB) error {
+func FileUpload(base64Image string, ParentId string, Category string, tx *gorm.DB) error {
 	var c *fiber.Ctx
 	var fileName string
 	decoded, err := base642.StdEncoding.DecodeString(base64Image)
@@ -53,20 +53,32 @@ func FileUpload(base64Image string, ParentId uuid.UUID, Category string, tx *gor
 	}
 
 	if Category == "Company" {
-		file.CompanyParentId = ParentId.String()
+		file.CompanyParentId = ParentId
 		file.Category = Category
 		file.FileName = fileName
 		file.Size = size
 		file.FilePath = fmt.Sprintf("/uploads/%s", fileName)
 	} else if Category == "Channel" {
-		file.ChannelParentId = ParentId.String()
+		file.ChannelParentId = ParentId
 		file.Category = Category
 		file.FileName = fileName
 		file.Size = size
 		file.FilePath = fmt.Sprintf("/uploads/%s", fileName)
 
+	} else if Category == "Reference" {
+		file.ReferenceParentId = ParentId
+		file.Category = Category
+		file.FileName = fileName
+		file.Size = size
+		file.FilePath = fmt.Sprintf("/uploads/%s", fileName)
+	} else if Category == "Resource" {
+		file.ResourceParentId = ParentId
+		file.Category = Category
+		file.FileName = fileName
+		file.Size = size
+		file.FilePath = fmt.Sprintf("/uploads/%s", fileName)
 	} else {
-		file.InfluencerParentId = ParentId.String()
+		file.InfluencerParentId = ParentId
 		file.Category = Category
 		file.FileName = fileName
 		file.Size = size

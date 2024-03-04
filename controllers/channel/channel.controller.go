@@ -135,7 +135,7 @@ func CreateChannel(c *fiber.Ctx) error {
 
 	if payload.Image.Base64 != "" {
 		if payload.Image.Base64 != "" {
-			err := utils.FileUpload(payload.Image.Base64, channel.ID, "Channel", tx)
+			err := utils.FileUpload(payload.Image.Base64, channel.ID.String(), "Channel", tx)
 			if err != nil {
 				tx.Rollback()
 				return c.Status(http.StatusOK).JSON(utils.ResponseObj{ResponseCode: http.StatusBadRequest,
@@ -259,7 +259,7 @@ func UpdateChannel(c *fiber.Ctx) error {
 	if payload.Image.Base64 != "" {
 		var file []file.File
 		tx.Where("channel_parent_id = ?", channel.ID).Delete(&file)
-		err := utils.FileUpload(payload.Image.Base64, channel.ID, "Channel", tx)
+		err := utils.FileUpload(payload.Image.Base64, channel.ID.String(), "Channel", tx)
 		if err != nil {
 			tx.Rollback()
 			return c.Status(http.StatusOK).JSON(utils.ResponseObj{ResponseCode: http.StatusBadRequest,

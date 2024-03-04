@@ -3,9 +3,8 @@ package utils
 import (
 	"fmt"
 	"github.com/go-playground/validator/v10"
-	"math"
-
 	"gorm.io/gorm"
+	"math"
 )
 
 func Paginate(value interface{}, pagination *Pagination, db *gorm.DB) func(db *gorm.DB) *gorm.DB {
