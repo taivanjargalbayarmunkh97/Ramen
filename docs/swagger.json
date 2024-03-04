@@ -1626,9 +1626,12 @@
             "type": "object",
             "required": [
                 "address",
+                "body",
+                "brands",
                 "city",
                 "description",
                 "email",
+                "image",
                 "name",
                 "phone",
                 "type",
@@ -1638,6 +1641,15 @@
                 "address": {
                     "type": "string"
                 },
+                "body": {
+                    "type": "string"
+                },
+                "brands": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "city": {
                     "type": "string"
                 },
@@ -1646,6 +1658,9 @@
                 },
                 "email": {
                     "type": "string"
+                },
+                "image": {
+                    "$ref": "#/definitions/utils.Base64Struct"
                 },
                 "name": {
                     "type": "string"
@@ -1670,6 +1685,15 @@
                 "address": {
                     "type": "string"
                 },
+                "body": {
+                    "type": "string"
+                },
+                "brands": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "city": {
                     "type": "string"
                 },
@@ -1679,11 +1703,20 @@
                 "email": {
                     "type": "string"
                 },
+                "image": {
+                    "$ref": "#/definitions/utils.Base64Struct"
+                },
                 "name": {
                     "type": "string"
                 },
                 "phone": {
                     "type": "string"
+                },
+                "type": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "website": {
                     "type": "string"
@@ -1707,6 +1740,9 @@
                         "type": "string"
                     }
                 },
+                "body": {
+                    "type": "string"
+                },
                 "city": {
                     "type": "string"
                 },
@@ -1727,6 +1763,9 @@
                 },
                 "website": {
                     "type": "string"
+                },
+                "youtube_link": {
+                    "type": "string"
                 }
             }
         },
@@ -1741,6 +1780,9 @@
                     "items": {
                         "type": "string"
                     }
+                },
+                "body": {
+                    "type": "string"
                 },
                 "city": {
                     "type": "string"
@@ -1764,6 +1806,9 @@
                     "type": "string"
                 },
                 "website": {
+                    "type": "string"
+                },
+                "youtube_link": {
                     "type": "string"
                 }
             }
@@ -1935,6 +1980,9 @@
                 },
                 "field3": {
                     "type": "string"
+                },
+                "image": {
+                    "$ref": "#/definitions/utils.Base64Struct"
                 },
                 "name": {
                     "type": "string"

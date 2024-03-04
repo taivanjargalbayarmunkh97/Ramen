@@ -13,6 +13,7 @@ type File struct {
 	UpdatedAt          time.Time      `gorm:"column:updated_at;autoUpdateTime:false"`
 	DeletedAt          gorm.DeletedAt `json:"deleted_at" gorm:"index"`
 	ParentId           string         `json:"parent_id" gorm:"default:null"`
+	AgencyParentId     string         `json:"agency_parent_id" gorm:"default:null"`
 	CompanyParentId    string         `json:"company_parent_id" gorm:"default:null"`
 	InfluencerParentId string         `json:"influencer_parent_id" gorm:"default:null"`
 	ChannelParentId    string         `json:"channel_parent_id" gorm:"default:null"`

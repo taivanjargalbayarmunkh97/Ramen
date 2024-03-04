@@ -16,6 +16,8 @@ type Company struct {
 	DeletedAt       gorm.DeletedAt `json:"deleted_at" gorm:"index"`
 	Name            string         `json:"name"`
 	Description     string         `json:"description"`
+	Body            string         `json:"body"`
+	YoutubeLink     string         `json:"youtube_link"`
 	Website         string         `json:"website"`
 	Email           string         `json:"email"`
 	Phone           string         `json:"phone"`
@@ -28,6 +30,8 @@ type Company struct {
 type CreateCompany struct {
 	Name            string             `json:"name" validate:"required"`
 	Description     string             `json:"description"`
+	Body            string             `json:"body"`
+	YoutubeLink     string             `json:"youtube_link"`
 	Website         string             `json:"website"`
 	Email           string             `json:"email" validate:"required"`
 	Phone           string             `json:"phone"`
@@ -41,6 +45,8 @@ type UpdateCompany struct {
 	Id              string             `json:"id"`
 	Name            string             `json:"name"`
 	Description     string             `json:"description"`
+	Body            string             `json:"body"`
+	YoutubeLink     string             `json:"youtube_link"`
 	Website         string             `json:"website"`
 	Email           string             `json:"email"`
 	Phone           string             `json:"phone"`

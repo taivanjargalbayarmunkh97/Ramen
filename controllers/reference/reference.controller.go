@@ -2,6 +2,7 @@ package reference
 
 import (
 	"example.com/ramen/initializers"
+	"example.com/ramen/models/file"
 	"example.com/ramen/models/reference"
 	"example.com/ramen/utils"
 	"github.com/gofiber/fiber/v2"
@@ -86,7 +87,7 @@ func ListReference(c *fiber.Ctx) error {
 	}
 
 	conn = initializers.DB.
-		Model(&reference.Reference{}).
+		Model(&reference.Reference{}).Preload("Image").
 		Scopes(utils.Filter(request.Filter, request.GlobOperation))
 
 	pagination := utils.Pagination{CurrentPageNo: request.PageNo, PerPage: request.PerPage, Sort: request.Sort}
@@ -119,7 +120,7 @@ func GetReference(ctx *fiber.Ctx) error {
 			ResponseMsg: "Олдсонгүй"})
 	}
 
-	result := initializers.DB.Where("id = ?", id).First(&reference)
+	result := initializers.DB.Where("id = ?", id).Preload("Image").First(&reference)
 	if result.Error != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest, ResponseMsg: "Алдаа гарлаа"})
 	}
@@ -154,9 +155,10 @@ func UpdateReference(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: err.Error()})
 	}
-
-	result := initializers.DB.Where("id = ?", id).First(&referencedb)
+	tx := initializers.DB.Begin()
+	result := tx.Where("id = ?", id).First(&referencedb)
 	if result.RowsAffected == 0 {
+		tx.Rollback()
 		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: "Reference олдсонгүй"})
 	}
@@ -167,11 +169,26 @@ func UpdateReference(c *fiber.Ctx) error {
 	referencedb.Field2 = request.Field2
 	referencedb.Field3 = request.Field3
 	referencedb.Code = request.Code
-	result = initializers.DB.Save(&referencedb)
+	result = tx.Save(&referencedb)
 	if result.Error != nil {
+		tx.Rollback()
 		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: "Алдаа гарлаа", Data: result.Error.Error()})
 	}
+
+	if request.Image.Base64 != "" {
+		var file []file.File
+		tx.Where("reference_parent_id = ?", referencedb.ID).Delete(&file)
+		err := utils.FileUpload(request.Image.Base64, id, "Reference", tx)
+		if err != nil {
+			tx.Rollback()
+			return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
+				ResponseMsg: err.Error()})
+		}
+
+	}
+
+	tx.Commit()
 
 	return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusOK,
 		ResponseMsg: "Амжилттай шинэчлэлээ", Data: referencedb})

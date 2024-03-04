@@ -99,6 +99,8 @@ func CreateCompany(c *fiber.Ctx) error {
 	}
 	company.Name = payload.Name
 	company.Description = payload.Description
+	company.Body = payload.Body
+	company.YoutubeLink = payload.YoutubeLink
 	company.Website = payload.Website
 	company.Email = payload.Email
 	company.Phone = payload.Phone
@@ -180,6 +182,8 @@ func UpdateCompany(c *fiber.Ctx) error {
 	}
 	company.Name = payload.Name
 	company.Description = payload.Description
+	company.Body = payload.Body
+	company.YoutubeLink = payload.YoutubeLink
 	company.Website = payload.Website
 	company.Email = payload.Email
 	company.Phone = payload.Phone

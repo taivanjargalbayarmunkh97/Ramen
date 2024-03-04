@@ -4,54 +4,9 @@ definitions:
     properties:
       address:
         type: string
-      city:
+      body:
         type: string
-      description:
-        type: string
-      email:
-        type: string
-      name:
-        type: string
-      phone:
-        type: string
-      type:
-        items:
-          type: string
-        type: array
-      website:
-        type: string
-    required:
-    - address
-    - city
-    - description
-    - email
-    - name
-    - phone
-    - type
-    - website
-    type: object
-  Agency.UpdateAgency:
-    properties:
-      address:
-        type: string
-      city:
-        type: string
-      description:
-        type: string
-      email:
-        type: string
-      name:
-        type: string
-      phone:
-        type: string
-      website:
-        type: string
-    type: object
-  Company.CreateCompany:
-    properties:
-      address:
-        type: string
-      areas_of_activity:
+      brands:
         items:
           type: string
         type: array
@@ -67,7 +22,79 @@ definitions:
         type: string
       phone:
         type: string
+      type:
+        items:
+          type: string
+        type: array
       website:
+        type: string
+    required:
+    - address
+    - body
+    - brands
+    - city
+    - description
+    - email
+    - image
+    - name
+    - phone
+    - type
+    - website
+    type: object
+  Agency.UpdateAgency:
+    properties:
+      address:
+        type: string
+      body:
+        type: string
+      brands:
+        items:
+          type: string
+        type: array
+      city:
+        type: string
+      description:
+        type: string
+      email:
+        type: string
+      image:
+        $ref: '#/definitions/utils.Base64Struct'
+      name:
+        type: string
+      phone:
+        type: string
+      type:
+        items:
+          type: string
+        type: array
+      website:
+        type: string
+    type: object
+  Company.CreateCompany:
+    properties:
+      address:
+        type: string
+      areas_of_activity:
+        items:
+          type: string
+        type: array
+      body:
+        type: string
+      city:
+        type: string
+      description:
+        type: string
+      email:
+        type: string
+      image:
+        $ref: '#/definitions/utils.Base64Struct'
+      name:
+        type: string
+      phone:
+        type: string
+      website:
+        type: string
+      youtube_link:
         type: string
     required:
     - email
@@ -82,6 +109,8 @@ definitions:
         items:
           type: string
         type: array
+      body:
+        type: string
       city:
         type: string
       description:
@@ -97,6 +126,8 @@ definitions:
       phone:
         type: string
       website:
+        type: string
+      youtube_link:
         type: string
     type: object
   channel.CreateChannel:
@@ -209,6 +240,8 @@ definitions:
         type: string
       field3:
         type: string
+      image:
+        $ref: '#/definitions/utils.Base64Struct'
       name:
         type: string
     required:

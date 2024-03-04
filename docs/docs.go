@@ -1632,9 +1632,12 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "address",
+                "body",
+                "brands",
                 "city",
                 "description",
                 "email",
+                "image",
                 "name",
                 "phone",
                 "type",
@@ -1644,6 +1647,15 @@ const docTemplate = `{
                 "address": {
                     "type": "string"
                 },
+                "body": {
+                    "type": "string"
+                },
+                "brands": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "city": {
                     "type": "string"
                 },
@@ -1652,6 +1664,9 @@ const docTemplate = `{
                 },
                 "email": {
                     "type": "string"
+                },
+                "image": {
+                    "$ref": "#/definitions/utils.Base64Struct"
                 },
                 "name": {
                     "type": "string"
@@ -1676,6 +1691,15 @@ const docTemplate = `{
                 "address": {
                     "type": "string"
                 },
+                "body": {
+                    "type": "string"
+                },
+                "brands": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "city": {
                     "type": "string"
                 },
@@ -1685,11 +1709,20 @@ const docTemplate = `{
                 "email": {
                     "type": "string"
                 },
+                "image": {
+                    "$ref": "#/definitions/utils.Base64Struct"
+                },
                 "name": {
                     "type": "string"
                 },
                 "phone": {
                     "type": "string"
+                },
+                "type": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "website": {
                     "type": "string"
@@ -1713,6 +1746,9 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
+                "body": {
+                    "type": "string"
+                },
                 "city": {
                     "type": "string"
                 },
@@ -1733,6 +1769,9 @@ const docTemplate = `{
                 },
                 "website": {
                     "type": "string"
+                },
+                "youtube_link": {
+                    "type": "string"
                 }
             }
         },
@@ -1747,6 +1786,9 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                },
+                "body": {
+                    "type": "string"
                 },
                 "city": {
                     "type": "string"
@@ -1770,6 +1812,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "website": {
+                    "type": "string"
+                },
+                "youtube_link": {
                     "type": "string"
                 }
             }
@@ -1941,6 +1986,9 @@ const docTemplate = `{
                 },
                 "field3": {
                     "type": "string"
+                },
+                "image": {
+                    "$ref": "#/definitions/utils.Base64Struct"
                 },
                 "name": {
                     "type": "string"

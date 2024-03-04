@@ -11,9 +11,12 @@ type Map struct {
 	CompanyActivityEntityId string `json:"company_activity_entity_id" gorm:"default:null"`
 	ChannelTypeEntityId     string `json:"channel_type_entity_id" gorm:"default:null"`
 	ResourcesEntityId       string `json:"resources_entity_id" gorm:"default:null"`
+	AgencyEntityId          string `json:"agency_entity_id" gorm:"default:null"`
+	AgencyBrandsEntityId    string `json:"agency_brands_entity_id" gorm:"default:null"`
 	Name                    string `json:"name"`
 	ReferenceId             uint   `json:"reference_id"`
 	EntityName              string `json:"entity_name"`
+	Image                   string `json:"image"`
 }
 
 type RoleMap struct {
