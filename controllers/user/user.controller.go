@@ -4,9 +4,12 @@ import (
 	"example.com/ramen/initializers"
 	user "example.com/ramen/models/user"
 	"example.com/ramen/utils"
+	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 	"net/http"
+	"reflect"
 )
 
 // GetMe godoc
@@ -51,20 +54,53 @@ func GetMe(c *fiber.Ctx) error {
 func GetUserList(c *fiber.Ctx) error {
 	var users []user.UserSimple
 	var request utils.RequestObj
-	var conn = initializers.DB
+	var conn1 = initializers.DB
 
 	if err := c.BodyParser(&request); err != nil {
 		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: err.Error()})
 	}
 
-	conn = initializers.DB.
-		Model(&user.User{}).Preload("Photo").Preload("Photo1").Preload("Photo2").Preload("PRole").Preload("Role").
-		Scopes(utils.Filter(request.Filter, request.GlobOperation))
+	var where string
+	var filter func(db *gorm.DB) *gorm.DB
+
+	for i, v := range request.Filter {
+		if v.FieldName == "role.id" {
+			if where != "" {
+				where += " and "
+			}
+			where = where + "ID in (" + "select entity_id from role_maps where deleted_at is" +
+				" null and " +
+				" role_id in ("
+			for i, val := range v.Values {
+				if i > 0 {
+					where += ", "
+				}
+				if reflect.TypeOf(val) == reflect.TypeOf(int(0)) {
+					where += fmt.Sprintf("%d", val)
+				} else {
+					where += fmt.Sprintf("'%s'", val)
+				}
+			}
+			where += "))"
+			filter = utils.Filter(request.Filter[i+1:], request.GlobOperation)
+		}
+	}
+	filter = utils.Filter(request.Filter, request.GlobOperation)
+
+	if where != "" {
+		conn1 = initializers.DB.
+			Model(&user.User{}).Preload("Photo").Preload("Photo1").Preload("Photo2").Preload("PRole").Preload("Role").Scopes(
+			filter).Where(where)
+	} else {
+		conn1 = initializers.DB.
+			Model(&user.User{}).Preload("Photo").Preload("Photo1").Preload("Photo2").Preload("PRole").Preload("Role").Scopes(
+			filter)
+	}
 
 	pagination := utils.Pagination{CurrentPageNo: request.PageNo, PerPage: request.PerPage, Sort: request.Sort}
-	conn.Debug().
-		Scopes(utils.Paginate(users, &pagination, conn)).
+	conn1.Debug().
+		Scopes(utils.Paginate(users, &pagination, conn1)).
 		Find(&users)
 
 	return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusOK,
