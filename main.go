@@ -5,6 +5,7 @@ import (
 	"example.com/ramen/controllers/news"
 	"example.com/ramen/controllers/resources"
 	"fmt"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 	"log"
 	"os"
 
@@ -66,6 +67,7 @@ func apiRoutes() *fiber.App {
 	}))
 
 	app.Use(cors.New())
+	app.Use(recover.New())
 
 	// API routes
 	//app.Mount("/api", app)
