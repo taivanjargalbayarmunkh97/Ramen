@@ -214,7 +214,7 @@ func SignUpInfluencer(c *fiber.Ctx) error {
 	roleMap.EntityId = newUser.ID.String()
 	roleMap.Name = role.Name
 	roleMap.RoleId = role.Id
-	roleMap.EntityName = "Company"
+	roleMap.EntityName = "Influencer"
 
 	err1 := tx.Create(&roleMap)
 	if err1.Error != nil {

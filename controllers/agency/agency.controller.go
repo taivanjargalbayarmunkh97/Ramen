@@ -276,11 +276,11 @@ func GetAgentList(c *fiber.Ctx) error {
 
 	if where != "" {
 		conn = initializers.DB.
-			Model(&Agency.Agency{}).Preload("Type").Preload("Brands").Scopes(
+			Model(&Agency.Agency{}).Preload("Type").Preload("Brands").Preload("Image").Scopes(
 			filter).Where(where)
 	} else {
 		conn = initializers.DB.
-			Model(&Agency.Agency{}).Preload("Type").Preload("Brands").Scopes(
+			Model(&Agency.Agency{}).Preload("Type").Preload("Brands").Preload("Image").Scopes(
 			filter)
 	}
 
@@ -322,7 +322,7 @@ func GetAgentList(c *fiber.Ctx) error {
 func GetAgent(c *fiber.Ctx) error {
 	id := c.Params("id")
 	var agent Agency.Agency
-	result := initializers.DB.Preload("Type").Preload("Brands").First(&agent, "id = ?", id)
+	result := initializers.DB.Preload("Type").Preload("Brands").Preload("Image").First(&agent, "id = ?", id)
 	if result.Error != nil {
 		return c.Status(fiber.StatusOK).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest,
 			ResponseMsg: "Алдаа гарлаа", Data: result.Error.Error()})
@@ -342,7 +342,7 @@ func GetAgent(c *fiber.Ctx) error {
 
 }
 
-// DeleteUser godoc
+// DeleteAgent godoc
 // @Summary Delete user
 // @Description Delete user
 // @Tags Agency
@@ -353,7 +353,7 @@ func GetAgent(c *fiber.Ctx) error {
 // @Success 200 {object} utils.ResponseObj
 // @Failure 400 {object} utils.ResponseObj
 // @Router /agent/{id} [delete]
-func DeleteUser(c *fiber.Ctx) error {
+func DeleteAgent(c *fiber.Ctx) error {
 	id := c.Params("id")
 	var agent Agency.Agency
 	result := initializers.DB.Delete(&agent, "id = ?", id)

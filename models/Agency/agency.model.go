@@ -1,6 +1,7 @@
 package Agency
 
 import (
+	"example.com/ramen/models/file"
 	_map "example.com/ramen/models/map"
 	"example.com/ramen/utils"
 	"github.com/google/uuid"
@@ -20,6 +21,7 @@ type Agency struct {
 	City        string         `json:"city"`
 	Type        []_map.Map     `json:"type" gorm:"foreignKey:AgencyEntityId"`
 	Brands      []_map.Map     `json:"brands" gorm:"foreignKey:AgencyBrandsEntityId"`
+	Image       file.File      `json:"image" gorm:"foreignKey:AgencyParentId"`
 	CreatedAt   time.Time      `json:"created_at" gorm:"autoCreateTime"`
 	UpdatedAt   time.Time      `json:"updated_at" gorm:"autoUpdateTime"`
 	DeletedAt   gorm.DeletedAt `json:"deleted_at" gorm:"index"`
