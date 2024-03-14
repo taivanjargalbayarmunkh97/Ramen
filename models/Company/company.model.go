@@ -22,7 +22,7 @@ type Company struct {
 	Email           string         `json:"email"`
 	Phone           string         `json:"phone"`
 	Address         string         `json:"address"`
-	Image           file.File      `json:"image" gorm:"foreignKey:CompanyParentId;references:ID"`
+	Image           file.File      `json:"image" gorm:"foreignKey:CampaignsParentId;references:ID"`
 	AreasOfActivity []_map.Map     `json:"areas_of_activity" gorm:"foreignKey:CompanyActivityEntityId;references:ID"`
 	City            string         `json:"city"`
 }

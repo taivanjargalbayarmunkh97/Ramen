@@ -19,6 +19,7 @@ type File struct {
 	ChannelParentId    string         `json:"channel_parent_id" gorm:"default:null"`
 	ReferenceParentId  string         `json:"reference_parent_id" gorm:"default:null"`
 	ResourceParentId   string         `json:"resource_parent_id" gorm:"default:null"`
+	CampaignsParentId  string         `json:"campaigns_parent_id" gorm:"default:null"`
 	FileName           string         `json:"file_name"`
 	FilePath           string         `json:"file_path"`
 	Size               string         `json:"size"`

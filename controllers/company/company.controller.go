@@ -113,7 +113,7 @@ func CreateCompany(c *fiber.Ctx) error {
 			ResponseMsg: err.Error()})
 	}
 	if payload.Image.Base64 != "" {
-		err := utils.FileUpload(payload.Image.Base64, company.ID.String(), "Company", tx)
+		err := utils.FileUpload(payload.Image.Base64, company.ID.String(), "Campaigns", tx)
 		if err != nil {
 			tx.Rollback()
 			return c.Status(http.StatusOK).JSON(utils.ResponseObj{ResponseCode: http.StatusBadRequest,

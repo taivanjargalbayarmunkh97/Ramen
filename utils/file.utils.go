@@ -83,6 +83,12 @@ func FileUpload(base64Image string, ParentId string, Category string, tx *gorm.D
 		file.FileName = fileName
 		file.Size = size
 		file.FilePath = fmt.Sprintf("/uploads/%s", fileName)
+	} else if Category == "Campaigns" {
+		file.CampaignsParentId = ParentId
+		file.Category = Category
+		file.FileName = fileName
+		file.Size = size
+		file.FilePath = fmt.Sprintf("/uploads/%s", fileName)
 	} else {
 		file.InfluencerParentId = ParentId
 		file.Category = Category
