@@ -81,7 +81,7 @@ func apiRoutes() *fiber.App {
 	// Үндсэн хэрэглэгчийн мэдээлэл
 	app.Route("/users", func(router fiber.Router) {
 		router.Get("/me", middleware.DeserializeUser, user.GetMe)
-		router.Post("/list", middleware.DeserializeUser, user.GetUserList)
+		router.Post("/list", user.GetUserList)
 		router.Put("/:user_id", middleware.DeserializeUser, user.UpdateUser)
 		router.Delete("/:user_id", middleware.DeserializeUser, user.DeleteUser)
 	})
@@ -103,7 +103,7 @@ func apiRoutes() *fiber.App {
 	app.Route("/agent", func(router fiber.Router) {
 		router.Post("/list", agency.GetAgentList)
 		router.Get("/:id", middleware.DeserializeUser, agency.GetAgent)
-		router.Post("/create", middleware.DeserializeUser, agency.CreateAgency)
+		router.Post("/create", agency.CreateAgency)
 		router.Put("/:id", middleware.DeserializeUser, agency.UpdateAgent)
 		router.Delete("/:id", middleware.DeserializeUser, agency.DeleteUser)
 	})
@@ -121,7 +121,7 @@ func apiRoutes() *fiber.App {
 	app.Route("/channel", func(router fiber.Router) {
 		router.Post("/list", middleware.DeserializeUser, channel.ListChannel)
 		router.Get("/:id", middleware.DeserializeUser, channel.GetChannel)
-		router.Post("/", middleware.DeserializeUser, channel.CreateChannel)
+		router.Post("/", channel.CreateChannel)
 		router.Put("/:id", middleware.DeserializeUser, channel.UpdateChannel)
 		router.Delete("/:id", middleware.DeserializeUser, channel.DeleteChannel)
 
@@ -129,7 +129,7 @@ func apiRoutes() *fiber.App {
 
 	// Reference
 	app.Route("/reference", func(router fiber.Router) {
-		router.Post("/list", middleware.DeserializeUser, reference.ListReference)
+		router.Post("/list", reference.ListReference)
 		router.Get("/:id", middleware.DeserializeUser, reference.GetReference)
 		router.Post("/", middleware.DeserializeUser, reference.CreateReference)
 		router.Put("/:id", middleware.DeserializeUser, reference.UpdateReference)
@@ -138,7 +138,7 @@ func apiRoutes() *fiber.App {
 
 	// Resources
 	app.Route("/resources", func(router fiber.Router) {
-		router.Post("/list", middleware.DeserializeUser, resources.ListReference)
+		router.Post("/list", resources.ListReference)
 		router.Get("/:id", middleware.DeserializeUser, resources.GetReference)
 		router.Post("/", middleware.DeserializeUser, resources.CreateReference)
 		router.Put("/:id", middleware.DeserializeUser, resources.UpdateReference)
