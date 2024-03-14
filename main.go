@@ -2,6 +2,7 @@ package main
 
 import (
 	"example.com/ramen/controllers/channel"
+	"example.com/ramen/controllers/news"
 	"example.com/ramen/controllers/resources"
 	"fmt"
 	"log"
@@ -143,6 +144,16 @@ func apiRoutes() *fiber.App {
 		router.Post("/", middleware.DeserializeUser, resources.CreateReference)
 		router.Put("/:id", middleware.DeserializeUser, resources.UpdateReference)
 		router.Delete("/:id", middleware.DeserializeUser, resources.DeleteReference)
+
+	})
+
+	// News
+	app.Route("/news", func(router fiber.Router) {
+		//router.Post("/list", resources.ListReference)
+		//router.Get("/:id", middleware.DeserializeUser, resources.GetReference)
+		router.Post("/", middleware.DeserializeUser, news.CreateNews)
+		//router.Put("/:id", middleware.DeserializeUser, resources.UpdateReference)
+		//router.Delete("/:id", middleware.DeserializeUser, resources.DeleteReference)
 
 	})
 

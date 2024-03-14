@@ -3,7 +3,10 @@ package company
 import (
 	_map "example.com/ramen/models/map"
 	reference2 "example.com/ramen/models/reference"
+	"fmt"
+	"gorm.io/gorm"
 	"net/http"
+	"reflect"
 
 	"example.com/ramen/initializers"
 	"example.com/ramen/models/Company"
@@ -24,6 +27,7 @@ import (
 // @Failure 400 {object} utils.ResponseObj
 // @Router /company/list [post]
 func ListCompany(c *fiber.Ctx) error {
+
 	var company []Company.Company
 	var request utils.RequestObj
 	var conn = initializers.DB
@@ -33,9 +37,43 @@ func ListCompany(c *fiber.Ctx) error {
 			ResponseMsg: err.Error()})
 	}
 
-	conn = initializers.DB.
-		Model(&Company.Company{}).Preload("Image").Preload("AreasOfActivity").
-		Scopes(utils.Filter(request.Filter, request.GlobOperation))
+	var where string
+	var filter func(db *gorm.DB) *gorm.DB
+
+	for i, v := range request.Filter {
+		if v.FieldName == "type.id" {
+			if where != "" {
+				where += " and "
+			}
+
+			where = where + "ID in (" + "select company_activity_entity_id from maps where deleted_at is" +
+				" null and " +
+				" reference_id in ("
+			for i, val := range v.Values {
+				if i > 0 {
+					where += ", "
+				}
+				if reflect.TypeOf(val) == reflect.TypeOf(int(0)) {
+					where += fmt.Sprintf("%d", val)
+				} else {
+					where += fmt.Sprintf("'%s'", val)
+				}
+			}
+			where += "))"
+			filter = utils.Filter(request.Filter[i+1:], request.GlobOperation)
+		}
+	}
+	filter = utils.Filter(request.Filter, request.GlobOperation)
+
+	if where != "" {
+		conn = initializers.DB.
+			Model(&Company.Company{}).Preload("Image").Preload("AreasOfActivity").Scopes(
+			filter).Where(where)
+	} else {
+		conn = initializers.DB.
+			Model(&Company.Company{}).Preload("Image").Preload("AreasOfActivity").Scopes(
+			filter)
+	}
 
 	pagination := utils.Pagination{CurrentPageNo: request.PageNo, PerPage: request.PerPage, Sort: request.Sort}
 	conn.Debug().
