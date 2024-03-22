@@ -105,7 +105,7 @@ func apiRoutes() *fiber.App {
 	// Агент
 	app.Route("/agent", func(router fiber.Router) {
 		router.Post("/list", agency.GetAgentList)
-		router.Get("/:id", middleware.DeserializeUser, agency.GetAgent)
+		router.Get("/:id", agency.GetAgent)
 		router.Post("/create", agency.CreateAgency)
 		router.Put("/:id", middleware.DeserializeUser, agency.UpdateAgent)
 		router.Delete("/:id", middleware.DeserializeUser, agency.DeleteAgent)
