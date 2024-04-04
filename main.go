@@ -5,6 +5,7 @@ import (
 	"example.com/ramen/controllers/news"
 	"example.com/ramen/controllers/resources"
 	"fmt"
+	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"log"
 	"os"
@@ -20,7 +21,6 @@ import (
 	initializers2 "example.com/ramen/initializers"
 	"example.com/ramen/middleware"
 	fiberSwagger "github.com/arsmn/fiber-swagger/v2"
-	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 )
 
@@ -151,11 +151,11 @@ func apiRoutes() *fiber.App {
 
 	// News
 	app.Route("/news", func(router fiber.Router) {
-		//router.Post("/list", resources.ListReference)
-		//router.Get("/:id", middleware.DeserializeUser, resources.GetReference)
+		router.Post("/list", news.ListNews)
+		router.Get("/:id", news.GetNews)
 		router.Post("/", middleware.DeserializeUser, news.CreateNews)
-		//router.Put("/:id", middleware.DeserializeUser, resources.UpdateReference)
-		//router.Delete("/:id", middleware.DeserializeUser, resources.DeleteReference)
+		router.Put("/:id", middleware.DeserializeUser, news.UpdateNews)
+		router.Delete("/:id", middleware.DeserializeUser, news.DeleteNews)
 
 	})
 

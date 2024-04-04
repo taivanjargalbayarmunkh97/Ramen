@@ -13,6 +13,7 @@ type Map struct {
 	ResourcesEntityId       string `json:"resources_entity_id" gorm:"default:null"`
 	AgencyEntityId          string `json:"agency_entity_id" gorm:"default:null"`
 	AgencyBrandsEntityId    string `json:"agency_brands_entity_id" gorm:"default:null"`
+	NewsEntityId            string `json:"news_entity_id" gorm:"default:null"`
 	Name                    string `json:"name"`
 	ReferenceId             uint   `json:"reference_id"`
 	EntityName              string `json:"entity_name"`

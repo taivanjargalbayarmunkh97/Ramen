@@ -261,6 +261,9 @@ func UpdateReference(c *fiber.Ctx) error {
 // @Router /resources/{id} [get]
 func GetReference(c *fiber.Ctx) error {
 	var id = c.Params("id")
+	if id == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseObj{ResponseCode: fiber.StatusBadRequest, ResponseMsg: "Id is empty"})
+	}
 	var resource resources.Resources
 
 	if result := initializers.DB.Where("id = ?", id).Preload("Type").Preload("Image").First(&resource).

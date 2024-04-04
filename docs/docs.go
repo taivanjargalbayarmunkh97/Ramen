@@ -878,6 +878,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/news": {
+            "post": {
+                "description": "Create news",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "News"
+                ],
+                "summary": "Create news",
+                "parameters": [
+                    {
+                        "description": "CreateNews",
+                        "name": "resources",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/news.CreateNews"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ResponseObj"
+                        }
+                    }
+                }
+            }
+        },
         "/reference": {
             "post": {
                 "security": [
@@ -1932,6 +1966,32 @@ const docTemplate = `{
                 },
                 "website": {
                     "type": "string"
+                }
+            }
+        },
+        "news.CreateNews": {
+            "type": "object",
+            "required": [
+                "title"
+            ],
+            "properties": {
+                "body": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "image": {
+                    "$ref": "#/definitions/utils.Base64Struct"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },

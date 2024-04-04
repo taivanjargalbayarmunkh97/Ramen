@@ -1,6 +1,8 @@
 package news
 
 import (
+	"example.com/ramen/models/file"
+	_map "example.com/ramen/models/map"
 	"example.com/ramen/utils"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -15,11 +17,22 @@ type News struct {
 	Title       string         `json:"title"`
 	Description string         `json:"description"`
 	Body        string         `json:"body"`
+	Image       file.File      `json:"image" gorm:"foreignKey:NewsParentId;references:ID"`
+	Type        []_map.Map     `json:"type" gorm:"foreignKey:NewsEntityId;references:ID"`
 }
 
 type CreateNews struct {
 	Title       string `json:"title" validate:"required"`
 	Description string `json:"description"`
 	Image       utils.Base64Struct
-	Body        string `json:"body"`
+	Body        string   `json:"body"`
+	Type        []string `json:"type"`
+}
+
+type UpdateNews struct {
+	Title       string `json:"title" validate:"required"`
+	Description string `json:"description"`
+	Image       utils.Base64Struct
+	Body        string   `json:"body"`
+	Type        []string `json:"type"`
 }

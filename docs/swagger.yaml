@@ -208,6 +208,23 @@ definitions:
     - name
     - type
     type: object
+  news.CreateNews:
+    properties:
+      body:
+        type: string
+      description:
+        type: string
+      image:
+        $ref: '#/definitions/utils.Base64Struct'
+      title:
+        type: string
+      type:
+        items:
+          type: string
+        type: array
+    required:
+    - title
+    type: object
   reference.CreateReference:
     properties:
       code:
@@ -1122,6 +1139,28 @@ paths:
       summary: Get file by name
       tags:
       - File
+  /news:
+    post:
+      consumes:
+      - application/json
+      description: Create news
+      parameters:
+      - description: CreateNews
+        in: body
+        name: resources
+        required: true
+        schema:
+          $ref: '#/definitions/news.CreateNews'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.ResponseObj'
+      summary: Create news
+      tags:
+      - News
   /reference:
     post:
       consumes:
